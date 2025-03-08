@@ -149,7 +149,7 @@ void InputFile() {
 
             i++;
         }
-
+        TaskParameter[j].ExCounter = 0u;
 
         j++;
     }
@@ -285,37 +285,45 @@ void  App_TaskReturnHook (OS_TCB  *ptcb)
 #if OS_TASK_SW_HOOK_EN > 0
 void  App_TaskSwHook (void)
 {
+    INT8U CurrentTaskID = TaskParameter[OSPrioCur-1].TaskID;
+    INT16U CurrentTaskCtr = TaskParameter[OSPrioCur - 1].ExCounter;
+
+    INT8U NextTaskID = TaskParameter[OSPrioHighRdy-1].TaskID;
+    INT32U NextTaskCtr = TaskParameter[OSPrioHighRdy - 1].ExCounter;
+
+    INT32U CurrentTick = OSTimeGet();
 
     if (OSCtxSwCtr == 0)
     {
         printf("Tick\tCurrentTask ID\tNextTask ID\t# of ctx switch\n");
         fprintf(Output_fp, "Tick\tCurrentTask ID\tNextTask ID\t# of ctx switch\n");
-        printf(" 0\t***********\ttask(%2d)(%2d)\t 0\n", OSPrioCur, OSTCBCur->OSTCBCtxSwCtr);
-        fprintf(Output_fp, " 0\t***********\ttask(%2d)(%2d)\t 0\n", OSPrioCur, OSTCBCur->OSTCBCtxSwCtr);
+        printf("%2d\t***********\ttask(%2d)(%2d)\t 0\n", CurrentTick ,NextTaskID, NextTaskCtr);
+        fprintf(Output_fp, "%2d\t***********\ttask(%2d)(%2d)\t 0\n", CurrentTick, NextTaskID, NextTaskCtr);
     }
+
     fprintf(Output_fp, "%2d\t", OSTimeGet());
-    printf("%2d\t",OSTimeGet());
-    if (OSPrioCur == OS_TASK_IDLE_PRIO) 
+    printf("%2d\t", CurrentTick);
+    if (OSPrioCur == OS_TASK_IDLE_PRIO)  // if idle
     {
         printf("task(%d)\t", OS_TASK_IDLE_PRIO);
         fprintf(Output_fp, "task(%d)\t", OS_TASK_IDLE_PRIO);
     }
     else //current
     {
-        printf("task(%2d)(%2d)\t",OSPrioCur,OSTCBCur->OSTCBCtxSwCtr);
-        fprintf(Output_fp, "task(%2d)(%2d)\t", OSPrioCur, OSTCBCur->OSTCBCtxSwCtr);
+        printf("task(%2d)(%2d)\t", CurrentTaskID, CurrentTaskCtr);
+        fprintf(Output_fp, "task(%2d)(%2d)\t", CurrentTaskID, CurrentTaskCtr);
     }
-    if (OSPrioHighRdy == OS_TASK_IDLE_PRIO) 
+    if (OSPrioHighRdy == OS_TASK_IDLE_PRIO)  // if idle
     {
         printf("task(%d)\t", OS_TASK_IDLE_PRIO);
         fprintf(Output_fp, "task(%d)\t", OS_TASK_IDLE_PRIO);
     }
     else  // next
     {
-        printf("task(%2d)(%2d)\t", OSPrioHighRdy, OSTCBHighRdy->OSTCBCtxSwCtr);
-        fprintf(Output_fp, "task(%2d)(%2d)\t", OSPrioHighRdy, OSTCBHighRdy->OSTCBCtxSwCtr);
+        printf("task(%2d)(%2d)\t", NextTaskID, NextTaskCtr);
+        fprintf(Output_fp, "task(%2d)(%2d)\t", NextTaskID, NextTaskCtr);
     }
-    printf("%2d\n",OSCtxSwCtr);
+    printf("%2d\n",OSCtxSwCtr);  // CtxSw count
     fprintf(Output_fp, "%2d\n", OSCtxSwCtr);
     
 #if (APP_CFG_PROBE_OS_PLUGIN_EN > 0) && (OS_PROBE_HOOKS_EN > 0)

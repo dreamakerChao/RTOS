@@ -226,13 +226,15 @@ void task1(void* p_arg) {
     {
         OSTimeDly(task_data->TaskPeriodic);
     }
+    task_data->ExCounter++;
 }
 
 void task2(void* p_arg) {
     task_para_set* task_data;
-    task_data = p_arg;
+    task_data = p_arg; 
     while (1)
     {
         OSTimeDly(task_data->TaskPeriodic);
     }
+    task_data->ExCounter++;
 }
