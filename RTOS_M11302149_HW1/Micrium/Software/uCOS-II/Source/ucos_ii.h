@@ -94,7 +94,7 @@ typedef struct task_para_set {
     INT16U TaskPeriodic;
     INT16U TaskNumber;
     INT16U TaskPriority;
-    volatile INT16U ExCounter;
+    INT16U ExCounter;
 }task_para_set;
 int TASK_NUMBER;
 /*Task structure*/
