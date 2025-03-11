@@ -310,18 +310,19 @@ void  App_TaskSwHook (void)
         printf("%2d\t", CurrentTick);
         if (OSPrioCur == OS_TASK_IDLE_PRIO)  // if idle
         {
-            printf("task(%d)\t", OS_TASK_IDLE_PRIO);
+            printf("task(%2d)\t", OS_TASK_IDLE_PRIO);
             fprintf(Output_fp, "task(%d)\t", OS_TASK_IDLE_PRIO);
         }
         else //current
         {
             printf("task(%2d)(%2d)\t", CurrentTaskID, CurrentTaskCtr);
             fprintf(Output_fp, "task(%2d)(%2d)\t", CurrentTaskID, CurrentTaskCtr);
+            TaskParameter[OSPrioCur - 1].ExCounter++;
         }
         if (OSPrioHighRdy == OS_TASK_IDLE_PRIO)  // if idle
         {
-            printf("task(%d)\t", OS_TASK_IDLE_PRIO);
-            fprintf(Output_fp, "task(%d)\t", OS_TASK_IDLE_PRIO);
+            printf("task(%2d)\t", OS_TASK_IDLE_PRIO);
+            fprintf(Output_fp, "task(%2d)\t", OS_TASK_IDLE_PRIO);
         }
         else  // next
         {
@@ -334,7 +335,7 @@ void  App_TaskSwHook (void)
     
 
     fclose(Output_fp);
-    TaskParameter[OSPrioCur - 1].ExCounter++;
+   
     
 #if (APP_CFG_PROBE_OS_PLUGIN_EN > 0) && (OS_PROBE_HOOKS_EN > 0)
     printf("Tick: %d, CurrentTask Prio: %d, NextTask Prio: %d, ## Number of ctx switch: %d\n",
