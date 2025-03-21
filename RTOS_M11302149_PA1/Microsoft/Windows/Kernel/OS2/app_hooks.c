@@ -182,6 +182,7 @@ void InputFile() {
 
 void  App_TaskCreateHook (OS_TCB *ptcb)
 {
+    printf("Task[%3d] created, TCB Address\t%p\n", ptcb->OSTCBPrio,ptcb);
 #if (APP_CFG_PROBE_OS_PLUGIN_EN == DEF_ENABLED) && (OS_PROBE_HOOKS_EN > 0)
     OSProbe_TaskCreateHook(ptcb);
 #endif
