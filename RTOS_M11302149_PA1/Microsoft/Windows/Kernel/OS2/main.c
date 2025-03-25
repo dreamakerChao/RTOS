@@ -64,8 +64,9 @@ extern FILE* Output_fp;
 */
 
 static  void  StartupTask (void  *p_arg);
-static void task(void* p_arg);
-
+static void task1(void* p_arg);
+static void task2(void* p_arg);
+void TraverseTCBList(void);
 /*
 *********************************************************************************************************
 *                                                main()
@@ -129,19 +130,32 @@ int  main (void)
                            &os_err);
 #endif
 */
+
+
     /* Creat Task Set */
-    for (n = 0; n < TASK_NUMBER; n++) {
-        OSTaskCreateExt(task,
-            &TaskParameter[n],
-            &Task_STK[n][TASK_STACKSIZE - 1],
-            TaskParameter[n].TaskPriority,
-            TaskParameter[n].TaskID,
-            &Task_STK[n][0],
-            TASK_STACKSIZE,
-            &TaskParameter[n],
-            (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
-    }
+    OSTaskCreateExt(task1,                                   /* Create the task1 */
+        &TaskParameter[0],
+        &Task_STK[0][TASK_STACKSIZE - 1],
+        TaskParameter[0].TaskPriority,
+        TaskParameter[0].TaskID,
+        &Task_STK[0][0],
+        TASK_STACKSIZE,
+        &TaskParameter[0],
+        (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+
+    OSTaskCreateExt(task2,                                   /* Create the task2 */
+        &TaskParameter[1],
+        &Task_STK[1][TASK_STACKSIZE - 1],
+        TaskParameter[1].TaskPriority,
+        TaskParameter[1].TaskID,
+        &Task_STK[1][0],
+        TASK_STACKSIZE,
+        &TaskParameter[1],
+        (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
+
     /*Create Task Set*/
+
+    TraverseTCBList();
 
     OSTimeSet(0);
     OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II)   */
@@ -150,6 +164,25 @@ int  main (void)
         ;
     }
 }
+
+
+
+/*go thru TCB*/
+void TraverseTCBList(void) {
+    OS_TCB* ptcb = OSTCBList;
+    printf("===============TCB linked list===============\n");
+    printf("Task\tPrev_TCB_addr\tTCB_addr\tNext_TCB_addr\n");
+
+    while (ptcb != (OS_TCB*)0) {
+        printf("%-6d\t%08x\t%08x\t%08x\n",
+            ptcb->OSTCBPrio,
+            (unsigned int)ptcb->OSTCBPrev,
+            (unsigned int)ptcb,
+            (unsigned int)ptcb->OSTCBNext);
+        ptcb = ptcb->OSTCBNext;
+    }
+}
+/*go thru TCB*/
 
 
 /*
@@ -204,12 +237,22 @@ static  void  StartupTask (void *p_arg)
 *                  used.  The compiler should not generate any code for this statement.
 *********************************************************************************************************
 */
-void task(void* p_arg) {
+void task1(void* p_arg) {
     task_para_set* task_data;
     task_data = p_arg;
     while (1)
     { 
+        
         OSTimeDly(task_data->TaskPeriodic);
 
+    }
+}
+
+void task2(void* p_arg) {
+    task_para_set* task_data;
+    task_data = p_arg; 
+    while (1)
+    {
+        OSTimeDly(task_data->TaskPeriodic);
     }
 }

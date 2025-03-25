@@ -2162,7 +2162,6 @@ INT8U  OS_TCBInit (INT8U    prio,
         {
             printf("Next     TCB point to address\t%6d\n\n", 0);
         }
-
         return (OS_ERR_NONE);
     }
     OS_EXIT_CRITICAL();

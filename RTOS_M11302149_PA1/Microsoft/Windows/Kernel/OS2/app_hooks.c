@@ -155,6 +155,7 @@ void InputFile() {
     }
     fclose(fp);
     /*read file*/
+
 }
 
    
@@ -182,7 +183,7 @@ void InputFile() {
 
 void  App_TaskCreateHook (OS_TCB *ptcb)
 {
-    printf("Task[%3d] created, TCB Address\t%p\n", ptcb->OSTCBPrio,ptcb);
+    printf("Task[%3d] created, TCB Address\t%p\n", ptcb->OSTCBPrio, ptcb);
 #if (APP_CFG_PROBE_OS_PLUGIN_EN == DEF_ENABLED) && (OS_PROBE_HOOKS_EN > 0)
     OSProbe_TaskCreateHook(ptcb);
 #endif
@@ -285,9 +286,10 @@ void  App_TaskReturnHook (OS_TCB  *ptcb)
 #if OS_TASK_SW_HOOK_EN > 0
 void  App_TaskSwHook (void)
 {
-    if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
+    /*if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
         printf("Error open Output.txt!\n");
-    }
+    fclose(Output_fp);
+    }*/
 
     INT8U CurrentTaskID = TaskParameter[OSPrioCur-1].TaskID;
     INT16U CurrentTaskCtr = TaskParameter[OSPrioCur - 1].ExCounter;
@@ -297,44 +299,10 @@ void  App_TaskSwHook (void)
 
     INT32U CurrentTick = OSTimeGet();
 
-    if (OSCtxSwCtr == 0)
-    {
-        printf("Tick\tCurrentTask ID\tNextTask ID\t# of ctx switch\n");
-        fprintf(Output_fp, "Tick\tCurrentTask ID\tNextTask ID\t# of ctx switch\n");
-        printf("%2d\t***********\ttask(%2d)(%2d)\t 0\n", CurrentTick ,NextTaskID, NextTaskCtr);
-        fprintf(Output_fp, "%2d\t***********\ttask(%2d)(%2d)\t 0\n", CurrentTick, NextTaskID, NextTaskCtr);
-    }
-    else 
-    {
-        fprintf(Output_fp, "%2d\t", OSTimeGet());
-        printf("%2d\t", CurrentTick);
-        if (OSPrioCur == OS_TASK_IDLE_PRIO)  // if idle
-        {
-            printf("task(%2d)\t", OS_TASK_IDLE_PRIO);
-            fprintf(Output_fp, "task(%d)\t", OS_TASK_IDLE_PRIO);
-        }
-        else //current
-        {
-            printf("task(%2d)(%2d)\t", CurrentTaskID, CurrentTaskCtr);
-            fprintf(Output_fp, "task(%2d)(%2d)\t", CurrentTaskID, CurrentTaskCtr);
-            TaskParameter[OSPrioCur - 1].ExCounter++;
-        }
-        if (OSPrioHighRdy == OS_TASK_IDLE_PRIO)  // if idle
-        {
-            printf("task(%2d)\t", OS_TASK_IDLE_PRIO);
-            fprintf(Output_fp, "task(%2d)\t", OS_TASK_IDLE_PRIO);
-        }
-        else  // next
-        {
-            printf("task(%2d)(%2d)\t", NextTaskID, NextTaskCtr);
-            fprintf(Output_fp, "task(%2d)(%2d)\t", NextTaskID, NextTaskCtr);
-        }
-        printf("%2d\n", OSCtxSwCtr);  // CtxSw count
-        fprintf(Output_fp, "%2d\n", OSCtxSwCtr);
-    }
+  
     
 
-    fclose(Output_fp);
+    
    
     
 #if (APP_CFG_PROBE_OS_PLUGIN_EN > 0) && (OS_PROBE_HOOKS_EN > 0)

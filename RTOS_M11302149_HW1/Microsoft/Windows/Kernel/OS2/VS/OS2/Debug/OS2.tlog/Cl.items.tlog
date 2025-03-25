@@ -1,0 +1,21 @@
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uC-CPU\cpu_core.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\cpu_core.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uC-CPU\Win32\Visual_Studio\cpu_c.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\cpu_c.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uC-LIB\lib_ascii.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\lib_ascii.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uC-LIB\lib_math.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\lib_math.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uC-LIB\lib_mem.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\lib_mem.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uC-LIB\lib_str.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\lib_str.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Ports\Win32\Visual Studio\os_cpu_c.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_cpu_c.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_core.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_core.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_dbg_r.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_dbg_r.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_flag.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_flag.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_mbox.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_mbox.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_mem.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_mem.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_mutex.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_mutex.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_q.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_q.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_sem.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_sem.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_task.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_task.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_time.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_time.obj
+D:\RTOS\RTOS_M11302149_HW1\Micrium\Software\uCOS-II\Source\os_tmr.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\os_tmr.obj
+D:\RTOS\RTOS_M11302149_HW1\Microsoft\BSP\Windows\bsp_cpu.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\bsp_cpu.obj
+D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\app_hooks.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\app_hooks.obj
+D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\main.c;D:\RTOS\RTOS_M11302149_HW1\Microsoft\Windows\Kernel\OS2\VS\OS2\Debug\main.obj
