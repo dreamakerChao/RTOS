@@ -297,23 +297,37 @@ void  App_TaskSwHook (void)
     INT32U now = OSTime;
     task_para_set* now_task = &TaskParameter[p2id[OSPrioCur]-1];
     task_para_set* next_task = &TaskParameter[p2id[OSPrioHighRdy]-1];
-    if (now_task->state == 2)
+    if (now_task->state == 2 )
     {
-        printf("%2d\t%s\ttask(%2d)task(%2d)\ttask(%2d)task(%2d)\t%2d\t%2d\t%2d\n",
+        printf("app%2d\t%s\ttask(%2d)task(%2d)\ttask(%2d)task(%2d)\t%2d\t%2d\t%2d\n",
             OSTime,
             "completion",
             now_task->TaskID,
             now_task->TaskNumber,
             next_task->TaskID,
             next_task->TaskNumber,
-            OSTime - now_task->start_time,
-            OSTime - now_task->start_time - now_task->TaskExecutionTime,
+            OSTime - now_task->TaskArriveTime,
+            OSTime - now_task->TaskArriveTime - now_task->TaskExecutionTime,
             now_task->deadline - OSTime);
+
+        now_task->TaskArriveTime = now_task->deadline;
         now_task->deadline += now_task->TaskPeriodic;
         now_task->TaskNumber++;
         now_task->state == 0;
+        
 
    }
+    else if(now_task->state == 1 && now_task!= next_task && now_task->remaining > 0)
+    {
+        printf("%2d\t%s\ttask(%2d)task(%2d)\ttask(%2d)task(%2d)\n",
+            OSTime,
+            "preemption",
+            now_task->TaskID,
+            now_task->TaskNumber,
+            next_task->TaskID,
+            next_task->TaskNumber);
+    }
+
     
 #if (APP_CFG_PROBE_OS_PLUGIN_EN > 0) && (OS_PROBE_HOOKS_EN > 0)
     printf("Tick: %d, CurrentTask Prio: %d, NextTask Prio: %d, ## Number of ctx switch: %d\n",

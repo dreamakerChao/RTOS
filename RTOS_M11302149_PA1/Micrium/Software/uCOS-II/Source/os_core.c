@@ -993,24 +993,24 @@ void  OSTimeTick (void)
         while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
             OS_ENTER_CRITICAL();
             if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO     */
-                ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay       */
-                if (ptcb->OSTCBDly == 0u) {                /* Check for timeout                            */
+               ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay       */
+               if (ptcb->OSTCBDly == 0u) {                /* Check for timeout                            */
 
-                    if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {
-                        ptcb->OSTCBStat  &= (INT8U)~(INT8U)OS_STAT_PEND_ANY;   /* Yes, Clear status flag   */
-                        ptcb->OSTCBStatPend = OS_STAT_PEND_TO;                 /* Indicate PEND timeout    */
-                    } else {
+                   if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {
+                     ptcb->OSTCBStat  &= (INT8U)~(INT8U)OS_STAT_PEND_ANY;   /* Yes, Clear status flag   */
+                      ptcb->OSTCBStatPend = OS_STAT_PEND_TO;                 /* Indicate PEND timeout    */
+                   } else {
                         ptcb->OSTCBStatPend = OS_STAT_PEND_OK;
                     }
 
                     if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?       */
-                        OSRdyGrp               |= ptcb->OSTCBBitY;             /* No,  Make ready          */
-                        OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
-                        OS_TRACE_TASK_READY(ptcb);
-                    }
+                       OSRdyGrp               |= ptcb->OSTCBBitY;             /* No,  Make ready          */
+                       OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
+                       OS_TRACE_TASK_READY(ptcb);
+                   }
                 }
-            }
-            ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
+           }
+           ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
             OS_EXIT_CRITICAL();
         }
     }

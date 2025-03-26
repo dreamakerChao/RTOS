@@ -81,19 +81,23 @@ void  OSTimeDly (INT32U ticks)
         OS_Sched();                              /* Find next task to run!                             */
     }
 }
-void BusyWait(INT32U ticks)
+void BusyWait(INT32U ticks,task_para_set *task_data)
 {
     OSSchedLock();
     INT32U start_tick = OSTimeGet();
 
     while ((OSTimeGet() - start_tick) < ticks) {
         volatile INT32U i;
-        for (i = 0; i < 10000; i++) {
+        for (i = 0; i < 100000; i++) {
             ;
         }
     }
+    if (task_data->remaining == 0)
+    {
+        task_data->state = 2;
+    }
     OSSchedUnlock();
-    OS_Sched();
+    //OS_Sched();
 }
 
 /*
