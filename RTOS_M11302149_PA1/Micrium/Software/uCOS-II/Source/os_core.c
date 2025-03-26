@@ -946,17 +946,18 @@ void  OSTimeTick (void)
     OS_CPU_SR  cpu_sr = 0u;
 #endif
 
-
-
-#if OS_TIME_TICK_HOOK_EN > 0u
-    OSTimeTickHook();                                      /* Call user definable hook                     */
-#endif
+ //now
 #if OS_TIME_GET_SET_EN > 0u
     OS_ENTER_CRITICAL();                                   /* Update the 32-bit tick counter               */
     OSTime++;
     OS_TRACE_TICK_INCREMENT(OSTime);
     OS_EXIT_CRITICAL();
 #endif
+
+#if OS_TIME_TICK_HOOK_EN > 0u
+    OSTimeTickHook();                                      /* Call user definable hook                     */
+#endif
+//origin
     if (OSRunning == OS_TRUE) {
         /*setting the end time for the os*/
         if (OSTimeGet() > SYSTEM_END_TIME) {

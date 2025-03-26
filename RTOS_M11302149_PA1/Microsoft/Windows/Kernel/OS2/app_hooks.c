@@ -148,8 +148,12 @@ void InputFile() {
                 TaskParameter[j].TaskPeriodic = TaskInfo[i];
                 TaskParameter[j].TaskPriority = TaskInfo[i];
                 p2id[TaskParameter[j].TaskPriority] = TaskParameter[j].TaskID;
+                TaskParameter[j].deadline = TaskParameter[j].TaskArriveTime + TaskParameter[j].TaskPeriodic;
+                TaskParameter[j].remaining = TaskParameter[j].TaskExecutionTime;
+                TaskParameter[j].TaskNumber = 0;
+
             }
-            
+
             i++;
         }
 
@@ -186,6 +190,8 @@ void InputFile() {
 void  App_TaskCreateHook (OS_TCB *ptcb)
 {
     printf("Task[%3d] created, TCB Address\t%06x\n", p2id[ptcb->OSTCBPrio], ptcb);
+
+    
 #if (APP_CFG_PROBE_OS_PLUGIN_EN == DEF_ENABLED) && (OS_PROBE_HOOKS_EN > 0)
     OSProbe_TaskCreateHook(ptcb);
 #endif
@@ -288,8 +294,26 @@ void  App_TaskReturnHook (OS_TCB  *ptcb)
 #if OS_TASK_SW_HOOK_EN > 0
 void  App_TaskSwHook (void)
 {
-   
-   
+    INT32U now = OSTime;
+    task_para_set* now_task = &TaskParameter[p2id[OSPrioCur]-1];
+    task_para_set* next_task = &TaskParameter[p2id[OSPrioHighRdy]-1];
+    if (now_task->state == 2)
+    {
+        printf("%2d\t%s\ttask(%2d)task(%2d)\ttask(%2d)task(%2d)\t%2d\t%2d\t%2d\n",
+            OSTime,
+            "completion",
+            now_task->TaskID,
+            now_task->TaskNumber,
+            next_task->TaskID,
+            next_task->TaskNumber,
+            OSTime - now_task->start_time,
+            OSTime - now_task->start_time - now_task->TaskExecutionTime,
+            now_task->deadline - OSTime);
+        now_task->deadline += now_task->TaskPeriodic;
+        now_task->TaskNumber++;
+        now_task->state == 0;
+
+   }
     
 #if (APP_CFG_PROBE_OS_PLUGIN_EN > 0) && (OS_PROBE_HOOKS_EN > 0)
     printf("Tick: %d, CurrentTask Prio: %d, NextTask Prio: %d, ## Number of ctx switch: %d\n",
@@ -339,6 +363,7 @@ void  App_TCBInitHook (OS_TCB *ptcb)
 #if OS_TIME_TICK_HOOK_EN > 0
 void  App_TimeTickHook (void)
 {
+    printf("tick: %2d\n",OSTime);
 #if (APP_CFG_PROBE_OS_PLUGIN_EN == DEF_ENABLED) && (OS_PROBE_HOOKS_EN > 0)
     OSProbe_TickHook();
 #endif

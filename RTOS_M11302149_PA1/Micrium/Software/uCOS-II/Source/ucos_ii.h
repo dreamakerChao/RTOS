@@ -94,6 +94,11 @@ typedef struct task_para_set {
     INT16U TaskPeriodic;
     INT16U TaskNumber;
     INT16U TaskPriority;
+
+    INT32U remaining;
+    INT32U deadline;
+    INT32U start_time;
+    INT8U state;
 }task_para_set;
 int TASK_NUMBER;
 /*Task structure*/

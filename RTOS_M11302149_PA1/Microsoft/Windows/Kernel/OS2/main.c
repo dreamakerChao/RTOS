@@ -148,7 +148,6 @@ int  main (void)
     /*Create Task Set*/
 
     TraverseTCBList();
-
     OSTimeSet(0);
     OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II)   */
 
@@ -195,10 +194,42 @@ void TraverseTCBList(void) {
 void task(void* p_arg) {
     task_para_set* task_data;
     task_data = p_arg;
-    while (1)
-    { 
-        
-        OSTimeDly(task_data->TaskPeriodic);
 
+    
+
+    while (1)
+    {
+        task_data->state = 1;
+        task_data->start_time = OSTimeGet();
+        //printf("tick %d, task %2d :start\n", OSTimeGet(), task_data->TaskID);
+
+        for (INT32U i = 0; i < task_data->TaskExecutionTime; i++) {
+            task_data->remaining--;
+            printf("task: %2d, remaining: %2d\n", task_data->TaskID, task_data->remaining);
+            BusyWait(1);
+        }
+
+        printf("tick %d, task %2d :end\n", OSTimeGet(), task_data->TaskID);
+        if (task_data->remaining > 0 && OSTimeGet() > task_data->deadline)
+        {
+            //miss
+            printf("miss\n");
+        }
+        else
+        {
+            //completion
+            
+            INT32U now = OSTimeGet();
+            INT32U wait = task_data->deadline - now;
+
+
+            INT32U response_time = now - task_data->start_time;
+            task_data->state = 2;
+            task_data->remaining = task_data->TaskExecutionTime;
+            printf("next_time_wait: %2d \n", wait);
+            if(wait)
+                OSTimeDly(wait);
+        }
+        
     }
 }
