@@ -138,18 +138,20 @@ void InputFile() {
             if (i == 0) {
                 TASK_NUMBER++;
                 TaskParameter[j].TaskID = TaskInfo[i];
-                TaskParameter[j].TaskPriority = TaskInfo[i];
             }
             else if (i == 1)
                 TaskParameter[j].TaskArriveTime = TaskInfo[i];
             else if (i == 2)
                 TaskParameter[j].TaskExecutionTime = TaskInfo[i];
             else if (i == 3)
+            {
                 TaskParameter[j].TaskPeriodic = TaskInfo[i];
-
+                TaskParameter[j].TaskPriority = TaskInfo[i];
+                p2id[TaskParameter[j].TaskPriority] = TaskParameter[j].TaskID;
+            }
+            
             i++;
         }
-        TaskParameter[j].ExCounter = 0u;
 
         j++;
     }
@@ -183,7 +185,7 @@ void InputFile() {
 
 void  App_TaskCreateHook (OS_TCB *ptcb)
 {
-    printf("Task[%3d] created, TCB Address\t%p\n", ptcb->OSTCBPrio, ptcb);
+    printf("Task[%3d] created, TCB Address\t%06x\n", p2id[ptcb->OSTCBPrio], ptcb);
 #if (APP_CFG_PROBE_OS_PLUGIN_EN == DEF_ENABLED) && (OS_PROBE_HOOKS_EN > 0)
     OSProbe_TaskCreateHook(ptcb);
 #endif
@@ -286,23 +288,7 @@ void  App_TaskReturnHook (OS_TCB  *ptcb)
 #if OS_TASK_SW_HOOK_EN > 0
 void  App_TaskSwHook (void)
 {
-    /*if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
-        printf("Error open Output.txt!\n");
-    fclose(Output_fp);
-    }*/
-
-    INT8U CurrentTaskID = TaskParameter[OSPrioCur-1].TaskID;
-    INT16U CurrentTaskCtr = TaskParameter[OSPrioCur - 1].ExCounter;
-
-    INT8U NextTaskID = TaskParameter[OSPrioHighRdy-1].TaskID;
-    INT32U NextTaskCtr = TaskParameter[OSPrioHighRdy - 1].ExCounter;
-
-    INT32U CurrentTick = OSTimeGet();
-
-  
-    
-
-    
+   
    
     
 #if (APP_CFG_PROBE_OS_PLUGIN_EN > 0) && (OS_PROBE_HOOKS_EN > 0)

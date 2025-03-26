@@ -94,7 +94,6 @@ typedef struct task_para_set {
     INT16U TaskPeriodic;
     INT16U TaskNumber;
     INT16U TaskPriority;
-    INT16U ExCounter;
 }task_para_set;
 int TASK_NUMBER;
 /*Task structure*/
@@ -104,6 +103,8 @@ OS_STK** Task_STK;
 
 /*Create Task*/
 task_para_set TaskParameter[OS_MAX_TASKS];
+
+INT8U p2id[64];
 
 #ifndef  OS_FALSE
 #define  OS_FALSE                       0u
