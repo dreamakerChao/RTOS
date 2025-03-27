@@ -998,9 +998,7 @@ void  OSTimeTick (void)
             OSTCBCur->remaining--;
 
             if (OSTCBCur->remaining == 0) {
-                printf("%2u\tCompletion\ttask(%2d)(%2d)\n",
-                    OSTime, OSTCBCur->TaskID, OSTCBCur->TaskNumber);
-                ptcb->start_time = -2; //done
+                //ptcb->start_time = -1; //done
                 OSTaskSuspend(OSTCBCur->OSTCBPrio);
             }
         }
@@ -1018,7 +1016,7 @@ void  OSTimeTick (void)
                     ptcb->remaining = ptcb->execution_time;
                     ptcb->deadline = OSTime + ptcb->period;
                     ptcb->ArriveTime = OSTime;
-                    ptcb->start_time = -1; // arrival, by wait to run
+                    ptcb->start_time = -2; // arrival, but wait to run
                     ptcb->state = 1;
                     ptcb->TaskNumber++;
 
@@ -2085,7 +2083,7 @@ INT8U  OS_TCBInit (INT8U    prio,
         ptcb->period = task->TaskPeriodic;
         ptcb->execution_time = task->TaskExecutionTime; 
         ptcb->deadline= task->TaskArriveTime + task->TaskPeriodic ;
-        ptcb->start_time= -1;
+        ptcb->start_time= -3;  //take are
         ptcb->ArriveTime= task->TaskArriveTime;
         ptcb->TaskID = task->TaskID;
 #else

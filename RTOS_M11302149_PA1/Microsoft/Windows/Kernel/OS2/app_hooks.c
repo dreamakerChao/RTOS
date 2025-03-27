@@ -291,14 +291,30 @@ void  App_TaskReturnHook (OS_TCB  *ptcb)
 void  App_TaskSwHook (void)
 {
     //printf("TaskSW\n");
+    if (OSTCBCur->remaining == 0) {
+
+        printf("%2u\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t%d\t%d\n",
+            OSTime,
+            OSTCBCur->TaskID, OSTCBCur->TaskNumber,
+            OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber,
+            OSTime - OSTCBCur->start_time,
+            OSTime - OSTCBCur->start_time - OSTCBCur->execution_time,
+            OSTCBCur->deadline - OSTime);
+        OSTCBCur->start_time = -1; //done
+
+    }
+    if (OSTCBHighRdy->OSTCBPrio != OS_TASK_IDLE_PRIO)
+    {
+        if(OSTCBHighRdy->start_time < 0 )
+            OSTCBHighRdy->start_time = OSTime;
+    }
+
+
     if (OSTCBCur->remaining > 0 && OSTime>0) {
         printf("%2u\tPreemption\ttask(%2d)(%2d)\ttask(%2d)(%2d)\n",
             OSTime,
             OSTCBCur->TaskID, OSTCBCur->TaskNumber,
             OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber);
-        if (OSTCBHighRdy->start_time == -1 && OSTCBHighRdy->TaskID > 0) {
-            OSTCBHighRdy->start_time = OSTime;
-        }
     }
     
     
