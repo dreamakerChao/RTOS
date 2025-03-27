@@ -712,6 +712,9 @@ void  OSIntExit (void)
                 if (OSPrioHighRdy != OSPrioCur) {          /* No Ctx Sw if current task is highest rdy */
 #if OS_TASK_PROFILE_EN > 0u
                     OSTCBHighRdy->OSTCBCtxSwCtr++;         /* Inc. # of context switches to this task  */
+                    if (OSTCBHighRdy->start_time == -1 && OSTCBHighRdy->TaskID > 0) {
+                        OSTCBHighRdy->start_time = OSTime;
+                    }
 #endif
                     OSCtxSwCtr++;                          /* Keep track of the number of ctx switches */
 
@@ -990,29 +993,48 @@ void  OSTimeTick (void)
         }
 #endif
         ptcb = OSTCBList;                                  /* Point at first TCB in TCB list               */
+
+        if (OSTCBCur->OSTCBPrio != OS_TASK_IDLE_PRIO && OSTCBCur->TaskID > 0 && OSTCBCur->remaining > 0) {
+            OSTCBCur->remaining--;
+
+            if (OSTCBCur->remaining == 0) {
+                printf("%2u\tCompletion\ttask(%2d)(%2d)\n",
+                    OSTime, OSTCBCur->TaskID, OSTCBCur->TaskNumber);
+                ptcb->start_time = -2; //done
+                OSTaskSuspend(OSTCBCur->OSTCBPrio);
+            }
+        }
         while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
             OS_ENTER_CRITICAL();
-            if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO     */
-               ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay       */
-               if (ptcb->OSTCBDly == 0u) {                /* Check for timeout                            */
-
-                   if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {
-                     ptcb->OSTCBStat  &= (INT8U)~(INT8U)OS_STAT_PEND_ANY;   /* Yes, Clear status flag   */
-                      ptcb->OSTCBStatPend = OS_STAT_PEND_TO;                 /* Indicate PEND timeout    */
-                   } else {
-                        ptcb->OSTCBStatPend = OS_STAT_PEND_OK;
+            //now
+            
+            if (ptcb->TaskID > 0) {
+                if ((OSTime - ptcb->ArriveTime) >= ptcb->period) {
+                    if (ptcb->remaining > 0) {
+                        printf("%u MissDeadline task(%d)(job %d)\n",
+                            OSTime, ptcb->TaskID, ptcb->TaskNumber);
                     }
 
-                    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?       */
-                       OSRdyGrp               |= ptcb->OSTCBBitY;             /* No,  Make ready          */
-                       OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
-                       OS_TRACE_TASK_READY(ptcb);
-                   }
+                    ptcb->remaining = ptcb->execution_time;
+                    ptcb->deadline = OSTime + ptcb->period;
+                    ptcb->ArriveTime = OSTime;
+                    ptcb->start_time = -1; // arrival, by wait to run
+                    ptcb->state = 1;
+                    ptcb->TaskNumber++;
+
+                    OSTaskResume(ptcb->OSTCBPrio);
+                    //OS_Sched();
+
+                    /*printf("%u Arrive task(%d)(job %d)\n",
+                        OSTime, ptcb->TaskID, ptcb->TaskNumber);*/
                 }
-           }
+            }
+           
+
            ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
             OS_EXIT_CRITICAL();
         }
+
     }
 }
 
@@ -1714,7 +1736,6 @@ void  OS_Sched (void)
 #endif
 
 
-
     OS_ENTER_CRITICAL();
     if (OSIntNesting == 0u) {                          /* Schedule only if all ISRs done and ...       */
         if (OSLockNesting == 0u) {                     /* ... scheduler is not locked                  */
@@ -1722,6 +1743,7 @@ void  OS_Sched (void)
             OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
             if (OSPrioHighRdy != OSPrioCur) {          /* No Ctx Sw if current task is highest rdy     */
 #if OS_TASK_PROFILE_EN > 0u
+                
                 OSTCBHighRdy->OSTCBCtxSwCtr++;         /* Inc. # of context switches to this task      */
 #endif
                 OSCtxSwCtr++;                          /* Increment context switch counter             */
@@ -1738,6 +1760,8 @@ void  OS_Sched (void)
         }
     }
     OS_EXIT_CRITICAL();
+    
+
 }
 
 
@@ -2054,6 +2078,16 @@ INT8U  OS_TCBInit (INT8U    prio,
         ptcb->OSTCBStkBottom     = pbos;                   /* Store pointer to bottom of stack         */
         ptcb->OSTCBOpt           = opt;                    /* Store task options                       */
         ptcb->OSTCBId            = id;                     /* Store task ID                            */
+
+        task_para_set* task = &TaskParameter[p2id[prio]-1];
+
+        ptcb->remaining = task->TaskExecutionTime;
+        ptcb->period = task->TaskPeriodic;
+        ptcb->execution_time = task->TaskExecutionTime; 
+        ptcb->deadline= task->TaskArriveTime + task->TaskPeriodic ;
+        ptcb->start_time= -1;
+        ptcb->ArriveTime= task->TaskArriveTime;
+        ptcb->TaskID = task->TaskID;
 #else
         pext                     = pext;                   /* Prevent compiler warning if not used     */
         stk_size                 = stk_size;

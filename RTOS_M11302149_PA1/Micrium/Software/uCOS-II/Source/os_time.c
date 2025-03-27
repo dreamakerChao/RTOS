@@ -51,7 +51,22 @@
 * Returns    : none
 *********************************************************************************************************
 */
+void BusyWait(INT32U ticks, task_para_set* task_data)
+{
 
+    INT32U start_tick = OSTimeGet();
+    //printf("*****enter busy: task %d*****\n", task_data->TaskID);
+
+    while ((OSTimeGet() - start_tick) < ticks) {
+        volatile INT32U i;
+        for (i = 0; i < 100000; i++) {
+            ;
+        }
+    }
+    //printf("*****exit busy: task %d*****\n", task_data->TaskID);
+
+
+}
 void  OSTimeDly (INT32U ticks)
 {
     INT8U      y;
@@ -81,24 +96,7 @@ void  OSTimeDly (INT32U ticks)
         OS_Sched();                              /* Find next task to run!                             */
     }
 }
-void BusyWait(INT32U ticks,task_para_set *task_data)
-{
-    OSSchedLock();
-    INT32U start_tick = OSTimeGet();
 
-    while ((OSTimeGet() - start_tick) < ticks) {
-        volatile INT32U i;
-        for (i = 0; i < 100000; i++) {
-            ;
-        }
-    }
-    if (task_data->remaining == 0)
-    {
-        task_data->state = 2;
-    }
-    OSSchedUnlock();
-    //OS_Sched();
-}
 
 /*
 *********************************************************************************************************

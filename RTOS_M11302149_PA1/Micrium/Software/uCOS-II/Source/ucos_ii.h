@@ -95,10 +95,6 @@ typedef struct task_para_set {
     INT16U TaskNumber;
     INT16U TaskPriority;
 
-    INT32U remaining;
-    INT32U deadline;
-    INT32U start_time;
-    INT8U state;
 }task_para_set;
 int TASK_NUMBER;
 /*Task structure*/
@@ -618,6 +614,16 @@ typedef struct os_tcb {
     INT32U           OSTCBStkSize;          /* Size of task stack (in number of stack elements)        */
     INT16U           OSTCBOpt;              /* Task options as passed by OSTaskCreateExt()             */
     INT16U           OSTCBId;               /* Task ID (0..65535)                                      */
+
+    INT32U remaining;
+    INT32U deadline;
+    INT32U period;
+    int start_time;
+    INT32U ArriveTime;
+    INT8U state;
+    INT8U TaskID;
+    INT32U TaskNumber;
+    INT32U execution_time;
 #endif
 
     struct os_tcb   *OSTCBNext;             /* Pointer to next     TCB in the TCB list                 */

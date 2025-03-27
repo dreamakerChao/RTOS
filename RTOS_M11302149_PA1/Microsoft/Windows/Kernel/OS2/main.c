@@ -192,70 +192,16 @@ void TraverseTCBList(void) {
 *********************************************************************************************************
 */
 void task(void* p_arg) {
-    task_para_set* task_data;
-    task_data = p_arg;
+    task_para_set* task_data = (task_para_set*)p_arg;
+    INT8U id = task_data->TaskID;
 
-    
+    OS_TCB* ptcb = OSTCBPrioTbl[OSPrioCur];
 
-    while (1)
-    {
-        task_data->state = 1;
-        task_data->start_time = OSTimeGet();
-        //printf("tick %d, task %2d :start\n", OSTimeGet(), task_data->TaskID);
+    while (1) {
 
-        for (INT32U i = 0; i < task_data->TaskExecutionTime; i++) {
-            task_data->remaining--;
-            printf("task: %2d, remaining: %2d\n", task_data->TaskID, task_data->remaining+1);
-            BusyWait(1,task);
-        }
+        //printf("Task %d running at tick %d, ramaining: %d\n", ptcb->TaskID, OSTime, ptcb->remaining);
 
-        //printf("tick %d, task %2d :end\n", OSTimeGet(), task_data->TaskID);
-        if (task_data->remaining > 0 && OSTimeGet() > task_data->deadline)
-        {
-            //miss
-            printf("miss\n");
-        }
-        else
-        {
-            //completion
-            
-            INT32U now = OSTimeGet();
-            INT32U wait = task_data->deadline - now;
+        BusyWait(1, task_data);
 
-
-            INT32U response_time = now - task_data->start_time;
-            task_data->state = 2;
-            task_data->remaining = task_data->TaskExecutionTime;
-            printf("next_time_wait: %2d \n", wait);
-            if (wait != 0)
-            {
-                //
-                //task_data->state = 0;
-                OSTimeDly(wait);
-            }
-            else
-            {
-
-                printf("%2d\t%s\ttask(%2d)task(%2d)\ttask(%2d)task(%2d)\t%2d\t%2d\t%2d\n",
-                    now,
-                    "completion",
-                    task_data->TaskID,
-                    task_data->TaskNumber,
-                    task_data->TaskID,
-                    task_data->TaskNumber,
-                    now - task_data->TaskArriveTime,
-                    now - task_data->TaskArriveTime - task_data->TaskExecutionTime,
-                    task_data->deadline - now);
-
-                task_data->TaskArriveTime = task_data->deadline;
-                task_data->deadline += task_data->TaskPeriodic;
-                task_data->TaskNumber++;
-                task_data->state = 0;
-
-
-            }
-                
-        }
-        
     }
 }
