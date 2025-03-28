@@ -199,9 +199,15 @@ void task(void* p_arg) {
 
     while (1) {
 
-        //printf("Task %d running at tick %d, ramaining: %d\n", ptcb->TaskID, OSTime, ptcb->remaining);
 
-        BusyWait(1, task_data);
+        /*printf("Task %d running at tick %d, remaining: %d\n", ptcb->TaskID, OSTime, ptcb->remaining);
+
+        //BusyWait(1, task_data);
+        for (volatile int i = 0; i < 1200000; i++)
+        {
+            for (volatile int i = 0; i < 120000; i++);
+            OS_Dummy();
+        }*/
 
     }
 }

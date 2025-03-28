@@ -878,6 +878,26 @@ void  OSStart (void)
         OSPrioCur     = OSPrioHighRdy;
         OSTCBHighRdy  = OSTCBPrioTbl[OSPrioHighRdy]; /* Point to highest priority task ready to run    */
         OSTCBCur      = OSTCBHighRdy;
+        
+        OSTCBCur->deadline = OSTCBCur->period;
+        OSTCBCur->start_time = 0;
+        OSTCBCur->remaining = OSTCBCur->execution_time;
+
+        OS_TCB* ptcb = OSTCBList;
+        while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO)
+        {
+            OS_ENTER_CRITICAL();
+            if (ptcb->ArriveTime == 0)
+            {
+                ptcb->state = 1;
+                ptcb ->deadline = ptcb->period;
+            }
+            ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
+
+            OS_EXIT_CRITICAL();
+        }
+        
+        OSTCBCur->state = 2;
         OSStartHighRdy();                            /* Execute target specific code to start task     */
     }
 }
@@ -998,29 +1018,50 @@ void  OSTimeTick (void)
             OSTCBCur->remaining--;
 
             if (OSTCBCur->remaining == 0) {
-                //ptcb->start_time = -1; //done
-                OSTaskSuspend(OSTCBCur->OSTCBPrio);
+                OSTCBCur->state = 3; //done
+                /*printf("%2u\tCompletion\ttask(%2d)(%2d)\n",
+                    OSTime,
+                    OSTCBCur->TaskID, OSTCBCur->TaskNumber);*/
+                OSTaskSuspend(OSTCBCur->OSTCBPrio);      
             }
         }
         while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
             OS_ENTER_CRITICAL();
             //now
-            
+            if (ptcb->remaining > 0 && OSTime > ptcb->deadline && ptcb->state != 4) {
+                printf("%u MissDeadline task(%d)(job %d)\n",
+                    OSTime, ptcb->TaskID, ptcb->TaskNumber);
+            }
             if (ptcb->TaskID > 0) {
-                if ((OSTime - ptcb->ArriveTime) >= ptcb->period) {
-                    if (ptcb->remaining > 0) {
-                        printf("%u MissDeadline task(%d)(job %d)\n",
-                            OSTime, ptcb->TaskID, ptcb->TaskNumber);
+                if ((OSTime == ptcb->deadline) ) {
+                    
+
+                    if (ptcb->state == 3)
+                    {
+                        printf("%2u\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t%d\t%d\n",
+                            OSTime,
+                            OSTCBCur->TaskID, OSTCBCur->TaskNumber,
+                            OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber,
+                            OSTime - OSTCBCur->ArriveTime,
+                            OSTime - OSTCBCur->ArriveTime - OSTCBCur->execution_time,
+                            OSTCBCur->deadline - OSTime);
+                        ptcb->deadline += ptcb->period;
+                        ptcb->ArriveTime = OSTime;
+                        ptcb->TaskNumber++;
+                        ptcb->state = 1;
+
                     }
-
-                    ptcb->remaining = ptcb->execution_time;
-                    ptcb->deadline = OSTime + ptcb->period;
-                    ptcb->ArriveTime = OSTime;
-                    ptcb->start_time = -2; // arrival, but wait to run
-                    ptcb->state = 1;
-                    ptcb->TaskNumber++;
-
+                    else
+                    {
+                        ptcb->state = 1;// arrival, but wait to run
+                        ptcb->remaining = ptcb->execution_time;
+                        ptcb->deadline += ptcb->period;
+                        ptcb->ArriveTime = OSTime;
+                        ptcb->TaskNumber++;
+                        
+                    }
                     OSTaskResume(ptcb->OSTCBPrio);
+
                     //OS_Sched();
 
                     /*printf("%u Arrive task(%d)(job %d)\n",
@@ -1032,7 +1073,7 @@ void  OSTimeTick (void)
            ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
             OS_EXIT_CRITICAL();
         }
-
+        
     }
 }
 
@@ -2083,7 +2124,8 @@ INT8U  OS_TCBInit (INT8U    prio,
         ptcb->period = task->TaskPeriodic;
         ptcb->execution_time = task->TaskExecutionTime; 
         ptcb->deadline= task->TaskArriveTime + task->TaskPeriodic ;
-        ptcb->start_time= -3;  //take are
+        ptcb->start_time= 0;  //take are
+        ptcb->state = 0; // created, not arrival
         ptcb->ArriveTime= task->TaskArriveTime;
         ptcb->TaskID = task->TaskID;
 #else
