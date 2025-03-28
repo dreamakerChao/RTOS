@@ -1015,6 +1015,7 @@ void  OSTimeTick (void)
         ptcb = OSTCBList;                                  /* Point at first TCB in TCB list               */
 
         if (OSTCBCur->OSTCBPrio != OS_TASK_IDLE_PRIO && OSTCBCur->TaskID > 0 && OSTCBCur->remaining > 0) {
+            printf("task %d : remaining = %d\n",OSTCBCur->TaskID,OSTCBCur->remaining);
             OSTCBCur->remaining--;
 
             if (OSTCBCur->remaining == 0) {
@@ -1048,7 +1049,8 @@ void  OSTimeTick (void)
                         ptcb->deadline += ptcb->period;
                         ptcb->ArriveTime = OSTime;
                         ptcb->TaskNumber++;
-                        ptcb->state = 1;
+                        ptcb->state = 2;
+                        ptcb->remaining = ptcb->execution_time;
 
                     }
                     else

@@ -305,7 +305,7 @@ void  App_TaskSwHook (void)
             OSTCBCur->deadline - OSTime);
 
         ptcb->ArriveTime += ptcb->period;
-        ptcb->remaining = ptcb->execution_time;
+        //ptcb->remaining = ptcb->execution_time;
         ptcb->state = 4;
         //ptcb->deadline += ptcb->period;
     }

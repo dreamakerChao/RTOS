@@ -198,7 +198,7 @@ void task(void* p_arg) {
     OS_TCB* ptcb = OSTCBPrioTbl[OSPrioCur];
 
     while (1) {
-
+        OS_Dummy();
 
         /*printf("Task %d running at tick %d, remaining: %d\n", ptcb->TaskID, OSTime, ptcb->remaining);
 
