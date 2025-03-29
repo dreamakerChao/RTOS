@@ -616,14 +616,19 @@ typedef struct os_tcb {
     INT16U           OSTCBId;               /* Task ID (0..65535)                                      */
 
     INT32U remaining;
-    INT32U deadline;
+    
     INT32U period;
-    int start_time;
+    INT32U execution_time;
+    INT32U TaskNumber;
+
     INT32U ArriveTime;
+    INT32U deadline;
+    INT32U old_ArriveTime;
+    INT32U old_deadline;
+    INT32U old_TaskNumber;
     INT8U state;
     INT8U TaskID;
-    INT32U TaskNumber;
-    INT32U execution_time;
+    
 #endif
 
     struct os_tcb   *OSTCBNext;             /* Pointer to next     TCB in the TCB list                 */

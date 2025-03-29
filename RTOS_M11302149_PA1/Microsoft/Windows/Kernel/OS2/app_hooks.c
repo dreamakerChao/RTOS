@@ -290,39 +290,6 @@ void  App_TaskReturnHook (OS_TCB  *ptcb)
 #if OS_TASK_SW_HOOK_EN > 0
 void  App_TaskSwHook (void)
 {
-    INT32U now = OSTime;
-    //printf("TaskSW\n");
-    OS_TCB* ptcb = OSTCBCur;
-
-    if (OSTCBCur->state == 3) //done
-    {
-        printf("%2u\tCompletion\ttask(%2d)(%2d)\ttask(%2d)(%2d)\t%d\t%d\t%d\n",
-            OSTime,
-            OSTCBCur->TaskID, OSTCBCur->TaskNumber,
-            OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber,
-            OSTime - OSTCBCur->ArriveTime,
-            OSTime - OSTCBCur->ArriveTime - OSTCBCur->execution_time,
-            OSTCBCur->deadline - OSTime);
-
-        ptcb->ArriveTime += ptcb->period;
-        //ptcb->remaining = ptcb->execution_time;
-        ptcb->state = 4;
-        //ptcb->deadline += ptcb->period;
-    }
-
-
-    if (OSTCBHighRdy->state == 1 &&OSTime != 0) //arrival , and run 
-    {
-        OSTCBHighRdy->start_time = OSTime;
-        OSTCBHighRdy->state = 2;
-        OSTCBHighRdy->remaining = OSTCBHighRdy->execution_time;
-    }
-    if (OSTCBCur->state == 2 && OSTime>0 && OSTCBHighRdy != OSTCBCur) {
-        printf("%2u\tPreemption\ttask(%2d)(%2d)\ttask(%2d)(%2d)\n",
-            OSTime,
-            OSTCBCur->TaskID, OSTCBCur->TaskNumber,
-            OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber);
-    }
     
     
 #if (APP_CFG_PROBE_OS_PLUGIN_EN > 0) && (OS_PROBE_HOOKS_EN > 0)
