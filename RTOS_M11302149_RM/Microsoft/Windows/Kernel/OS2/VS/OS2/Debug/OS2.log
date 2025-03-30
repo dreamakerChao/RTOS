@@ -1,0 +1,4 @@
+﻿  os_core.c
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(1071,13): warning C4013: 'exit' undefined; assuming extern returning int
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2283,28): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
+  OS2.vcxproj -> E:\RTOS\RTOS_M11302149_PA1\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
