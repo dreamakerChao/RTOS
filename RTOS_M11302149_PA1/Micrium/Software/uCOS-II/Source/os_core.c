@@ -976,7 +976,7 @@ void  OSStatInit (void)
 * Returns    : none
 *********************************************************************************************************
 */
-static void PrintTask(char type[11]) {
+static void PrintTask(char type[11],const OS_TCB* miss) {
 
     char idle_name[13] = "task(63)";
     char name1[13];
@@ -984,6 +984,9 @@ static void PrintTask(char type[11]) {
     char* curr = name1;
     char* next = name2;
 
+    if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
+        printf("Error open Output.txt!\n");
+    }
 
     // Format current and next task names with TaskID and TaskNumber
     snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
@@ -1012,23 +1015,34 @@ static void PrintTask(char type[11]) {
             OSTime - OSTCBCur->ArriveTime,
             OSTime - OSTCBCur->ArriveTime - OSTCBCur->execution_time,
             OSTCBCur->deadline - OSTime);
+        fprintf(Output_fp,"%2u\tCompletion\ttask(%2u)(%2u)\t%-12s\t%u\t%u\t%u\n",
+            OSTime,
+            OSTCBCur->TaskID, OSTCBCur->TaskNumber,
+            next,
+            OSTime - OSTCBCur->ArriveTime,
+            OSTime - OSTCBCur->ArriveTime - OSTCBCur->execution_time,
+            OSTCBCur->deadline - OSTime);
 
     }
     else if (strcmp(type, "Preemption")==0)
     {
         printf("%2u\tPreemption\t%12s\t%-12s\n",
             OSTime, curr, next);
+        fprintf(Output_fp,"%2u\tPreemption\t%12s\t%-12s\n",
+            OSTime, curr, next);
     }
     else if (strcmp(type, "MissDeadLine")==0)
     {
-        printf("%2u\tMissDeadline\t%-12s\t-------------- \n",
-            OSTime, next);
+        printf("%2u\tMissDeadline\ttask(%2u)(%2u)\t----------------- \n",
+            OSTime, miss->TaskID,miss->TaskNumber);
+        fprintf(Output_fp,"%2u\tMissDeadline\ttask(%2u)(%2u)\t----------------- \n",
+            OSTime, miss->TaskID,miss->TaskNumber);
     }
     else
     {
         printf("printting wrong!\n");
     }
-
+    fclose(Output_fp);
 }
 
 void  OSTimeTick(void)
@@ -1150,10 +1164,12 @@ void  OSTimeTick(void)
          // 2. Scheduler: decide the next task
         OS_SchedNew();
         OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
+       
+
+         OS_TCB* Miss_ptcb = NULL;
 
          // 3. Second pass: print logs and finalize state transitions
          ptcb = OSTCBList;
-         BOOLEAN detect_miss = 0;
          while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {
              //OS_ENTER_CRITICAL();
 
@@ -1161,7 +1177,7 @@ void  OSTimeTick(void)
                  switch (ptcb->state) {
                  case 2:
                      //printf("%d Completion task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
-                     PrintTask("Completion");
+                     PrintTask("Completion",NULL);
                      ptcb->TaskNumber++;
                      ptcb->state = 0;
                      
@@ -1169,7 +1185,7 @@ void  OSTimeTick(void)
                  case 3:
                      //printf("%d Completion task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
                      printf("%d Arrive task(%d)(job %d) t3\n", OSTime, ptcb->TaskID, ptcb->TaskNumber + 1);
-                     PrintTask("Completion");
+                     PrintTask("Completion",NULL);
                      ptcb->ArriveTime = OSTime;
                      ptcb->remaining = ptcb->execution_time;
                      ptcb->TaskNumber++;
@@ -1178,8 +1194,7 @@ void  OSTimeTick(void)
                      break;
                  case 4:
                      //printf("%d MissDeadline task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
-                     PrintTask("MissDeadLine");
-                     detect_miss = 1;
+                     Miss_ptcb = ptcb;
                      break;
                  case 5:
                      printf("%d Arrive task(%d)(job %d)t5\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
@@ -1197,13 +1212,15 @@ void  OSTimeTick(void)
              //OS_EXIT_CRITICAL();
              ptcb = ptcb->OSTCBNext;
          }
-         if (detect_miss)
+
+         if (Miss_ptcb)
+         {
+             PrintTask("MissDeadLine",Miss_ptcb);
              exit(0);
-         // 4. Promote highest ready task to running if just arrived
-         ptcb = OSTCBHighRdy;
-         
+         }
+      
          if (OSTCBCur != OSTCBHighRdy && (OSTCBCur->state == 1||OSPrioCur == OS_TASK_IDLE_PRIO)) {
-             PrintTask("Preemption");
+             PrintTask("Preemption",NULL);
          }
 
     }
@@ -2349,30 +2366,11 @@ INT8U  OS_TCBInit (INT8U    prio,
         OSTaskCtr++;                                       /* Increment the #tasks counter             */
         OS_TRACE_TASK_READY(ptcb);
         OS_EXIT_CRITICAL();
-        printf("------After TCB[%2d] begin linked------\n",p2id[ptcb->OSTCBPrio]);
-        if (ptcb->OSTCBPrev)
-        {
-            printf("Previous TCB point to address\t%06x\n", ptcb->OSTCBPrev);
-        }
-        else
-        {
-            printf("Previous TCB point to address\t%6d\n", 0);
-        }
-        if (ptcb)
-        {
-            printf("Current  TCB point to address\t%06x\n", ptcb);
-        }
-        else
-        {
-            printf("Current  TCB point to address\t%6d\n", 0);
-        }if (ptcb->OSTCBNext)
-        {
-            printf("Next     TCB point to address\t%06x\n\n", ptcb->OSTCBNext);
-        }
-        else
-        {
-            printf("Next     TCB point to address\t%6d\n\n", 0);
-        }
+
+        printf("------After TCB[%2d] begin linked------\n", p2id[ptcb->OSTCBPrio]);
+        printf("Previous TCB point to address\t%06x\n", (unsigned int)(ptcb->OSTCBPrev));
+        printf("Current  TCB point to address\t%06x\n", (unsigned int)(ptcb));
+        printf("Next     TCB point to address\t%06x\n\n", (unsigned int)(ptcb->OSTCBNext));
         return (OS_ERR_NONE);
     }
     OS_EXIT_CRITICAL();

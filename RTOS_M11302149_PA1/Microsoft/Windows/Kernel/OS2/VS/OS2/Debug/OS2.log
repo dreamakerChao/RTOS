@@ -1,7 +1,4 @@
 ﻿  os_core.c
-E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(1057,13): warning C4013: 'exit' undefined; assuming extern returning int
-E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2266,28): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
-E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2355,20): warning C4477: 'printf' : format string '%06x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'os_tcb *'
-E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2363,20): warning C4477: 'printf' : format string '%06x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'OS_TCB *'
-E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2370,20): warning C4477: 'printf' : format string '%06x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'os_tcb *'
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(1071,13): warning C4013: 'exit' undefined; assuming extern returning int
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2283,28): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
   OS2.vcxproj -> E:\RTOS\RTOS_M11302149_PA1\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe

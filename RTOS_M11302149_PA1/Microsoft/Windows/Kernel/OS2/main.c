@@ -148,6 +148,13 @@ int  main (void)
     /*Create Task Set*/
 
     TraverseTCBList();
+    if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
+        printf("Error open Output.txt!\n");
+    }
+    fprintf(Output_fp,"Tick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
+    printf("Tick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
+    fclose(Output_fp);
+
     OSTimeSet(0);
     OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II)   */
 
