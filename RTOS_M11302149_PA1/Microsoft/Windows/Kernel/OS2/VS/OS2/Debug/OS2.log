@@ -1,7 +1,7 @@
 ﻿  os_core.c
-D:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(993,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
-D:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2219,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2308,20): warning C4477: 'printf' : 格式字串 '%06x' 需要 'unsigned int' 類型的引數，但 variadic 引數 1 的類型為 'os_tcb *'
-D:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2316,20): warning C4477: 'printf' : 格式字串 '%06x' 需要 'unsigned int' 類型的引數，但 variadic 引數 1 的類型為 'OS_TCB *'
-D:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2323,20): warning C4477: 'printf' : 格式字串 '%06x' 需要 'unsigned int' 類型的引數，但 variadic 引數 1 的類型為 'os_tcb *'
-  OS2.vcxproj -> D:\RTOS\RTOS_M11302149_PA1\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(1003,13): warning C4013: 'exit' undefined; assuming extern returning int
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2227,28): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2316,20): warning C4477: 'printf' : format string '%06x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'os_tcb *'
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2324,20): warning C4477: 'printf' : format string '%06x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'OS_TCB *'
+E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2331,20): warning C4477: 'printf' : format string '%06x' requires an argument of type 'unsigned int', but variadic argument 1 has type 'os_tcb *'
+  OS2.vcxproj -> E:\RTOS\RTOS_M11302149_PA1\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe

@@ -78,7 +78,7 @@ void  OSTimeDly (INT32U ticks)
         OSTCBCur->OSTCBDly = ticks;              /* Load ticks in TCB                                  */
         OS_TRACE_TASK_DLY(ticks);
         OS_EXIT_CRITICAL();
-        OS_Sched();                              /* Find next task to run!                             */
+        //OS_Sched();                              /* Find next task to run!                             */
     }
 }
 

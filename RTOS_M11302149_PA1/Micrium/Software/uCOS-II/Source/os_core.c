@@ -870,22 +870,35 @@ void  OSSchedUnlock (void)
 
 void  OSStart (void)
 {
+    OSTCBCur = OSTCBList;
     OS_TCB* ptcb = OSTCBList;
     while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
         OS_ENTER_CRITICAL();
         if (OSTime == ptcb->ArriveTime)
         {
+            ptcb->remaining = ptcb->execution_time;
+            ptcb->deadline = ptcb->period;
+            ptcb->old_ArriveTime = 0;
             ptcb->state = 1;
-
+            
         }
         else 
         {
-            OSTaskSuspend(ptcb->OSTCBPrio);
+            //OSTimeDly(ptcb->ArriveTime);
+            INT8U y = ptcb->OSTCBY;        /* Delay current task                                 */
+            OSRdyTbl[y] &= (OS_PRIO)~ptcb->OSTCBBitX;
+            //OS_TRACE_TASK_SUSPENDED(ptcb);
+            if (OSRdyTbl[y] == 0u) {
+                OSRdyGrp &= (OS_PRIO)~ptcb->OSTCBBitY;
+            }
+            ptcb->OSTCBDly = ptcb->ArriveTime;              /* Load ticks in TCB                                  */
+            //OS_TRACE_TASK_DLY(ticks);
             ptcb->state = 0;
         }
         
-        ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
+        
         OS_EXIT_CRITICAL();
+        ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
     }
 
 
@@ -900,7 +913,7 @@ void  OSStart (void)
         {
             OSTCBCur->deadline = OSTCBCur->period;
             OSTCBCur->remaining = OSTCBCur->execution_time;
-            OSTCBCur->state = 2;
+            OSTCBCur->state = 1;
         }
 
         OSStartHighRdy();                            /* Execute target specific code to start task     */
@@ -964,9 +977,9 @@ void  OSStatInit (void)
 *********************************************************************************************************
 */
 
-void  OSTimeTick (void)
+void  OSTimeTick(void)
 {
-    OS_TCB    *ptcb;
+    OS_TCB* ptcb;
 #if OS_TICK_STEP_EN > 0u
     BOOLEAN    step;
 #endif
@@ -974,18 +987,15 @@ void  OSTimeTick (void)
     OS_CPU_SR  cpu_sr = 0u;
 #endif
 
- //now
 #if OS_TIME_GET_SET_EN > 0u
     OS_ENTER_CRITICAL();                                   /* Update the 32-bit tick counter               */
     OSTime++;
     OS_TRACE_TICK_INCREMENT(OSTime);
     OS_EXIT_CRITICAL();
 #endif
-
 #if OS_TIME_TICK_HOOK_EN > 0u
     OSTimeTickHook();                                      /* Call user definable hook                     */
 #endif
-//origin
     if (OSRunning == OS_TRUE) {
         /*setting the end time for the os*/
         if (OSTimeGet() > SYSTEM_END_TIME) {
@@ -995,172 +1005,170 @@ void  OSTimeTick (void)
         /*Setting the end time for the OS*/
 #if OS_TICK_STEP_EN > 0u
         switch (OSTickStepState) {                         /* Determine whether we need to process a tick  */
-            case OS_TICK_STEP_DIS:                         /* Yes, stepping is disabled                    */
-                 step = OS_TRUE;
-                 break;
+        case OS_TICK_STEP_DIS:                         /* Yes, stepping is disabled                    */
+            step = OS_TRUE;
+            break;
 
-            case OS_TICK_STEP_WAIT:                        /* No,  waiting for uC/OS-View to set ...       */
-                 step = OS_FALSE;                          /*      .. OSTickStepState to OS_TICK_STEP_ONCE */
-                 break;
+        case OS_TICK_STEP_WAIT:                        /* No,  waiting for uC/OS-View to set ...       */
+            step = OS_FALSE;                          /*      .. OSTickStepState to OS_TICK_STEP_ONCE */
+            break;
 
-            case OS_TICK_STEP_ONCE:                        /* Yes, process tick once and wait for next ... */
-                 step            = OS_TRUE;                /*      ... step command from uC/OS-View        */
-                 OSTickStepState = OS_TICK_STEP_WAIT;
-                 break;
+        case OS_TICK_STEP_ONCE:                        /* Yes, process tick once and wait for next ... */
+            step = OS_TRUE;                /*      ... step command from uC/OS-View        */
+            OSTickStepState = OS_TICK_STEP_WAIT;
+            break;
 
-            default:                                       /* Invalid case, correct situation              */
-                 step            = OS_TRUE;
-                 OSTickStepState = OS_TICK_STEP_DIS;
-                 break;
+        default:                                       /* Invalid case, correct situation              */
+            step = OS_TRUE;
+            OSTickStepState = OS_TICK_STEP_DIS;
+            break;
         }
         if (step == OS_FALSE) {                            /* Return if waiting for step command           */
             return;
         }
 #endif
-        ptcb = OSTCBList;                                  /* Point at first TCB in TCB list               */
 
-        /*check done*/
-        if (OSTCBCur->OSTCBPrio != OS_TASK_IDLE_PRIO && OSTCBCur->remaining > 0) {
-            printf("task %d : remaining = %d\n",OSTCBCur->TaskID,OSTCBCur->remaining);
-            OSTCBCur->remaining--;
-            if (OSTCBCur->remaining == 0 && OSTime <= OSTCBCur->deadline)
+        // Decrement remaining time for running task
+        if (OSTCBCur->OSTCBPrio != OS_TASK_IDLE_PRIO)
+        {
+            if (OSTCBCur->remaining > 0)
             {
-                printf("task: %2d done\n", OSTCBCur->TaskID);
-                OSTCBCur->state = 3;
-                OSTCBCur->old_ArriveTime = OSTCBCur->ArriveTime;
-                OSTCBCur->old_deadline = OSTCBCur->deadline;
-                OSTCBCur->ArriveTime = OSTCBCur->deadline;
-                OSTCBCur->deadline += OSTCBCur->period;
-                OSTaskSuspend(OSTCBCur->OSTCBPrio);
-            }   
-        }
-        /*check done*/
-
-        OS_TCB* miss = NULL;
-        /*check ariival and check miss*/
-        while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
-            OS_ENTER_CRITICAL();
-                   
-            if (OSTime == ptcb->ArriveTime)
-            {
-                if (ptcb->remaining > 0) //miss
+                OSTCBCur->remaining--;
+                if (OSTCBCur->remaining == 0)
                 {
-                    ptcb->state = 6;
-                    miss = ptcb;
+                    if (OSTime == OSTCBCur->deadline) {
+                        OSTCBCur->state = 3;
+                    }
+                    else {
+                        OSTCBCur->state = 2;
+                        OSTCBCur->OSTCBDly = OSTCBCur->deadline - OSTime;
+                        OSRdyTbl[OSTCBCur->OSTCBY] &= ~(OSTCBCur->OSTCBBitX);
+                        if (OSRdyTbl[OSTCBCur->OSTCBY] == 0)
+                            OSRdyGrp &= ~(OSTCBCur->OSTCBBitY);
+                    }
                 }
-                if (ptcb->state == 3) //done and arrival immediately
-                {
+
+            }
+            else
+                printf("error\n");
+        }
+        else
+            printf("task idle\n");
+
+        
+
+        ptcb = OSTCBList;                                  /* Point at first TCB in TCB list               */
+        while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
+            
+            OS_ENTER_CRITICAL();
+            
+            printf("task: %2d remaining : %2d\n", ptcb->TaskID,ptcb->remaining);
+            // Deadline miss
+            if (ptcb->state == 1 && ptcb->remaining > 0 && OSTime >= ptcb->deadline) {
+                ptcb->state = 4;
+            }
+
+            if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO     */
+                if(ptcb->state ==0)
+                    ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay       */
+                if (ptcb->OSTCBDly == 0u && ptcb->state == 0) {                /* Check for timeout                            */
                     ptcb->state = 5;
+                    if ((ptcb->OSTCBStat & OS_STAT_PEND_ANY) != OS_STAT_RDY) {
+                        ptcb->OSTCBStat &= (INT8U)~(INT8U)OS_STAT_PEND_ANY;   /* Yes, Clear status flag   */
+                        ptcb->OSTCBStatPend = OS_STAT_PEND_TO;                 /* Indicate PEND timeout    */
+                    }
+                    else {
+                        ptcb->OSTCBStatPend = OS_STAT_PEND_OK;
+                    }
+
+                    if ((ptcb->OSTCBStat & OS_STAT_SUSPEND) == OS_STAT_RDY) {  /* Is task suspended?       */
+                        OSRdyGrp |= ptcb->OSTCBBitY;             /* No,  Make ready          */
+                        OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
+                        OS_TRACE_TASK_READY(ptcb);
+                    }
+                }
+            }
+
+            // Arrival
+            if (ptcb->state == 3 || ptcb->state == 5 ) {
+
+                if (ptcb->state == 3)
+                {
+                    ptcb->ArriveTime = OSTime;
+                    //ptcb->old_ArriveTime = ptcb->ArriveTime;
                 }
                 else
                 {
-                    ptcb->state = 1;
+                    ptcb->ArriveTime = OSTime;
+                    ptcb->state = 5;
+                    ptcb->old_TaskNumber = ptcb->TaskNumber;
+                    ptcb->old_ArriveTime = ptcb->ArriveTime;
+                    ptcb->old_deadline = ptcb->deadline;
+                    ptcb->deadline = OSTime + ptcb->period;
                 }
+                                
                 
-                //ptcb->remaining = ptcb->execution_time;
-                printf("%u Arrive task(%2d)(%2d)\n",
-                    OSTime, ptcb->TaskID, ptcb->TaskNumber);
-                ptcb->remaining = ptcb->execution_time;
-                OSTaskResume(ptcb->OSTCBPrio);
             }
             ptcb = ptcb->OSTCBNext;                        /* Point at next TCB in TCB list                */
             OS_EXIT_CRITICAL();
         }
-        /*check ariival and check miss*/
 
-        /*find new HighRdy*/
+         // 2. Scheduler: decide the next task
         OS_SchedNew();
         OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
-        /*find new HighRdy*/
 
-        /*print out message*/
-        if (OSTCBCur->state == 3 || OSTCBCur->state == 5)
-        {
-            char idle_name[13] = "task(63)";
-            char name1[13];
-            char* next = name1;
-            
+         // 3. Second pass: print logs and finalize state transitions
+         ptcb = OSTCBList;
+         BOOLEAN detect_miss = 0;
+         while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {
+             //OS_ENTER_CRITICAL();
 
-            if (OSTCBHighRdy->OSTCBPrio == OS_TASK_IDLE_PRIO)
-                next = idle_name;
+             if (ptcb->TaskID > 0) {
+                 switch (ptcb->state) {
+                 case 2:
+                     printf("%d Completion task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
+                     ptcb->TaskNumber++;
+                     ptcb->state = 0;
+                     
+                     break;
+                 case 3:
+                     printf("%d Completion task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
+                     printf("%d Arrive task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber + 1);
+                     ptcb->TaskNumber++;
+                     ptcb->state = 5;
+                     break;
+                 case 4:
+                     printf("%d MissDeadline task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
+                     detect_miss = 1;
+                     break;
+                 case 5:
+                     printf("%d Arrive task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
+                     break;
+                 default:
+                     break;
+                 }
+             }
+                             
 
-            if (OSTCBHighRdy == OSTCBCur)
-            {
-                snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
-                    OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber+1);
-                printf("%2u\tCompletion\ttask(%2d)(%2d)\t%-12s\t%d\t%d\t%d\n",
-                    OSTime,
-                    OSTCBCur->TaskID, OSTCBCur->TaskNumber,
-                    next,
-                    OSTime - OSTCBCur->old_ArriveTime,
-                    OSTime - OSTCBCur->old_ArriveTime - OSTCBCur->execution_time,
-                    OSTCBCur->old_deadline - OSTime);
-            }
-            else
-            {
-                snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
-                    OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber);
-                printf("%2u\tCompletion\ttask(%2d)(%2d)\t%-12s\t%d\t%d\t%d\n",
-                    OSTime,
-                    OSTCBCur->TaskID, OSTCBCur->TaskNumber,
-                    next,
-                    OSTime - OSTCBCur->old_ArriveTime,
-                    OSTime - OSTCBCur->old_ArriveTime - OSTCBCur->execution_time,
-                    OSTCBCur->old_deadline - OSTime);
-            }
-            
-            OSTCBCur->TaskNumber++;
-            if(OSTCBCur->state==3)
-                OSTCBCur->state = 4;
-            else
-                OSTCBCur->state = 1;
-        }
-        else if (OSTCBHighRdy!= OSTCBCur)
-        {
-            char idle_name[13] = "task(63)";
-            char name1[13];
-            char name2[13];
-            char* curr = name1;
-            char* next = name2;
+             //OS_EXIT_CRITICAL();
+             ptcb = ptcb->OSTCBNext;
+         }
+         if (detect_miss)
+             exit(0);
+         // 4. Promote highest ready task to running if just arrived
+         ptcb = OSTCBHighRdy;
+         
+         if (OSTCBCur != OSTCBHighRdy && OSTCBCur->state == 1) {
+             printf("Preemption\n");
+         }
+         if (ptcb->state == 5 || ptcb->state == 3) {
+             ptcb->remaining = ptcb->execution_time;
+             ptcb->state = 1;
+             ptcb->deadline = OSTime + ptcb->period;
 
-            // Format current and next task names with TaskID and TaskNumber
-            snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
-                OSTCBCur->TaskID, OSTCBCur->TaskNumber);
-            snprintf(name2, sizeof(name2), "task(%2d)(%2d)", 
-                OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber);
-
-            // If current or next task is idle, use the idle_name instead
-            if (OSTCBCur->OSTCBPrio == OS_TASK_IDLE_PRIO)
-                curr = idle_name;
-            if (OSTCBHighRdy->OSTCBPrio == OS_TASK_IDLE_PRIO)
-                next = idle_name;
-
-            // Print preemption info with task names
-            printf("%2u\tPreemption\t%12s\t%-12s\n",
-                OSTime,curr,next);
-        }
-
-        if (miss)
-        {
-            printf("%2u\tMissDeadline\ttask(%2d)(%2d) ----------- \n",
-                OSTime, miss->TaskID, miss->TaskNumber);
-            OSRunning = OS_FALSE;
-            exit(1);
-        }
-        /*print out message*/
-
-        /*update arrival parameter*/
-        if (OSTCBHighRdy->state == 1 && OSTime != 0) //arrival , and run 
-        {
-            OSTCBHighRdy->state = 2;
-        }
-        /*update arrival parameter*/
-
-        
+         }
     }
 }
-
-
 /*
 *********************************************************************************************************
 *                                             GET VERSION
@@ -2203,7 +2211,7 @@ INT8U  OS_TCBInit (INT8U    prio,
 
         task_para_set* task = &TaskParameter[p2id[prio]-1];
 
-        ptcb->remaining = task->TaskExecutionTime;
+        ptcb->remaining = 0;
         ptcb->period = task->TaskPeriodic;
         ptcb->execution_time = task->TaskExecutionTime; 
 

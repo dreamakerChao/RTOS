@@ -916,7 +916,7 @@ void  OSCtxSw (void)
 void  OSIntCtxSw (void)
 {
     OSTaskSwHook();
-    printf("[IntCtxSw] %d -> %d at time %d\n", OSTCBCur->TaskID, OSTCBHighRdy->TaskID, OSTime);
+    //printf("[IntCtxSw] %d -> %d at time %d\n", OSTCBCur->TaskID, OSTCBHighRdy->TaskID, OSTime);
 
     OSTCBCur  = OSTCBHighRdy;
     OSPrioCur = OSPrioHighRdy;
