@@ -56,6 +56,7 @@
 #define TASK_STACKSIZE      2048
 static  OS_STK  StartupTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE];
 extern FILE* Output_fp;
+task_queue* OS_FIFO_Queue = NULL;
 
 /*
 *********************************************************************************************************
@@ -154,6 +155,9 @@ int  main (void)
     fprintf(Output_fp,"Tick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
     printf("Tick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
     fclose(Output_fp);
+
+    OS_FIFO_Queue = (task_queue*)malloc(sizeof(task_queue));
+    OS_FIFO_InitQueue(OS_FIFO_Queue);
 
     OSTimeSet(0);
     OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II)   */

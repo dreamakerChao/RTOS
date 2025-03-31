@@ -18,6 +18,7 @@
 *********************************************************************************************************
 */
 
+
 /*
 *********************************************************************************************************
 *
@@ -138,6 +139,7 @@ void InputFile() {
             if (i == 0) {
                 TASK_NUMBER++;
                 TaskParameter[j].TaskID = TaskInfo[i];
+                TaskParameter[j].TaskPriority = TaskInfo[i];
             }
             else if (i == 1)
                 TaskParameter[j].TaskArriveTime = TaskInfo[i];
@@ -146,7 +148,6 @@ void InputFile() {
             else if (i == 3)
             {
                 TaskParameter[j].TaskPeriodic = TaskInfo[i];
-                TaskParameter[j].TaskPriority = TaskInfo[i];
                 p2id[TaskParameter[j].TaskPriority] = TaskParameter[j].TaskID;
             }
 
@@ -346,4 +347,84 @@ void  App_TimeTickHook (void)
 #endif
 }
 #endif
+
+/*
+*********************************************************************************************************
+*                                          FIFO queue by dreamaker
+*
+*********************************************************************************************************
+*/
+
+void OS_FIFO_InitQueue(task_queue* q) {
+    q->head = NULL;
+    q->tail = NULL;
+}
+
+
+void OS_FIFO_Enqueue(task_queue* q, OS_TCB* task_tcb,INT32U now)
+{
+    task_node* new_task = (task_node*)malloc(sizeof(task_node));
+    if (new_task == NULL)
+        return;
+
+    new_task->TaskTCB = task_tcb;
+    new_task->TaskID = task_tcb->TaskID;
+    new_task->TaskArriveTime = now;
+    new_task->remaining = task_tcb->execution_time;
+    new_task->TaskExecuteTime = task_tcb->execution_time;
+    new_task->TaskDeadline = now + task_tcb->period;
+    new_task->TaskNumber = task_tcb->TaskNumber;
+    new_task->next = NULL;
+
+    if (q->tail == NULL) {
+        q->head = q->tail = new_task;
+    }
+    else {
+        q->tail->next = new_task;
+        q->tail = new_task;
+    }
+}
+
+void OS_FIFO_Dequeue(task_queue* q) {
+    if (q->head == NULL)
+        return ;
+    task_node* temp = q->head;
+    q->head = q->head->next;
+
+    if (q->head == NULL)
+        q->tail = NULL;
+    free(temp);
+}
+
+task_node* OS_FIFO_Peek(task_queue* q) {
+    return q->head;
+}
+
+int OS_FIFO_IsEmpty(task_queue* q) {
+    return q->head == NULL;
+}
+
+void OS_FIFO_ClearQueue(task_queue* q) {
+    while (!OS_FIFO_IsEmpty(q)) {
+        OS_FIFO_Dequeue(q);
+    }
+}
+
+int OS_FIFO_GetCopy(task_queue* q, task_node* target) {
+    if (q == NULL || q->head == NULL || target == NULL) return 1;
+
+    task_node* src = q->head;
+
+    // Copy the contents from the head node into target
+    target->TaskID = src->TaskID;
+    target->TaskArriveTime = src->TaskArriveTime;
+    target->remaining = src->remaining;
+    target->TaskDeadline = src->TaskDeadline;
+    target->TaskExecuteTime = src->TaskExecuteTime;
+    target->TaskNumber = src->TaskNumber;
+    target->TaskTCB = src->TaskTCB;
+    target->next = NULL;  // Do not copy linked list pointer
+    return 0;
+}
+
 #endif

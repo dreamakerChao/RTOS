@@ -1,4 +1,17 @@
 ﻿  os_core.c
-E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(1071,13): warning C4013: 'exit' undefined; assuming extern returning int
-E:\RTOS\RTOS_M11302149_PA1\Micrium\Software\uCOS-II\Source\os_core.c(2283,28): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
-  OS2.vcxproj -> E:\RTOS\RTOS_M11302149_PA1\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(885,13): warning C4013: 'OS_FIFO_Enqueue' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(894,35): warning C4013: 'OS_FIFO_Peek' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(894,20): warning C4047: '正在初始化': 'task_node *' 與 'int' 間接取值的層級不同
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1065,13): warning C4013: 'OS_FIFO_ClearQueue' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1066,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1096,47): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1098,9): warning C4013: 'OS_FIFO_GetCopy' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1108,17): warning C4013: 'OS_FIFO_Dequeue' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1147,14): warning C4013: 'OS_FIFO_IsEmpty' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1148,23): warning C4047: '=': 'task_node *' 與 'int' 間接取值的層級不同
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1184,9): warning C4013: 'free' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1097,20): warning C4047: '正在初始化': 'task_node *' 與 'int' 間接取值的層級不同
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1123,20): warning C4047: '正在初始化': 'task_node *' 與 'int' 間接取值的層級不同
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1044,13): warning C4101: 'ptcb': 未參考的區域變數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(2236,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+  OS2.vcxproj -> D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe

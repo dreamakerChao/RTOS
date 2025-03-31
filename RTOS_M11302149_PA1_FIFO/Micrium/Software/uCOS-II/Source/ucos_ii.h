@@ -99,6 +99,8 @@ typedef struct task_para_set {
 int TASK_NUMBER;
 /*Task structure*/
 
+
+
 /*Dynamic Create the stack size*/
 OS_STK** Task_STK;
 
@@ -106,6 +108,7 @@ OS_STK** Task_STK;
 task_para_set TaskParameter[OS_MAX_TASKS];
 
 INT8U p2id[64];
+
 
 #ifndef  OS_FALSE
 #define  OS_FALSE                       0u
@@ -615,17 +618,12 @@ typedef struct os_tcb {
     INT16U           OSTCBOpt;              /* Task options as passed by OSTaskCreateExt()             */
     INT16U           OSTCBId;               /* Task ID (0..65535)                                      */
 
-    INT32U remaining;
-    
     INT32U period;
     INT32U execution_time;
     INT32U TaskNumber;
 
     INT32U ArriveTime;
     INT32U deadline;
-    INT32U old_ArriveTime;
-    INT32U old_deadline;
-    INT32U old_TaskNumber;
     INT8U state;
     INT8U TaskID;
     
@@ -690,6 +688,24 @@ typedef struct os_tcb {
 #endif
 } OS_TCB;
 
+/*task node queue*/
+typedef struct task_node {
+    OS_TCB* TaskTCB;
+    INT16U TaskID;
+    INT16U TaskArriveTime;
+    INT16U remaining;
+    INT16U TaskExecuteTime;
+    INT16U TaskDeadline;
+    INT16U TaskNumber;
+    struct task_node* next;
+} task_node;
+
+typedef struct task_queue {
+    task_node* head;
+    task_node* tail;
+} task_queue;
+task_queue* OS_FIFO_Queue;
+/*task node queue*/
 
 /*
 *********************************************************************************************************

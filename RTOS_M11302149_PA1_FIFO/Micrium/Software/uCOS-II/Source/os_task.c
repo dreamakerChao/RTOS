@@ -36,7 +36,6 @@
 #include <ucos_ii.h>
 #endif
 
-
 /*
 *********************************************************************************************************
 *                                      CHANGE PRIORITY OF A TASK
@@ -1385,3 +1384,4 @@ void  OS_TaskStkClr (OS_STK  *pbos,
 }
 
 #endif
+

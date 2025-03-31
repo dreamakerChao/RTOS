@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>E:\RTOS\RTOS_M11302149_PA1\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe</FullPath>
+      <FullPath>D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />
