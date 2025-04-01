@@ -1000,16 +1000,14 @@ static void PrintTask(char type[11],const task_node* node,const OS_TCB* miss) {
 
     if (strcmp(type, "Completion")==0)
     {
-        snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
-            OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber);
-        printf("%2u\tCompletion\t%-12s\t%-12s\t%d\t%d\t%d\n",
+        printf("%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7u\n",
             OSTime,
             curr,
             next,
             OSTime - node->TaskArriveTime,
             OSTime - node->TaskArriveTime - node->TaskExecuteTime,
             node->TaskDeadline - OSTime);
-        fprintf(Output_fp,"%2u\tCompletion\t%-12s\t%-12s\t%u\t%u\t%u\n",
+        fprintf(Output_fp,"%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7u\n",
             OSTime,
             curr,
             next,
@@ -1022,14 +1020,14 @@ static void PrintTask(char type[11],const task_node* node,const OS_TCB* miss) {
     {
         printf("%2u\tPreemption\t%-12s\t%-12s\n",
             OSTime, curr, next);
-        fprintf(Output_fp,"%2u\tPreemption\t%12s\t%-12s\n",
+        fprintf(Output_fp,"%2u\tPreemption\t%-12s\t%-12s\n",
             OSTime, curr, next);
     }
     else if (strcmp(type, "MissDeadLine")==0)
     {
-        printf("%2u\tMissDeadline\ttask(%2u)(%2u)\t----------------- \n",
+        printf("%2u\tMissDeadline\ttask(%2u)(%2u)\t------------------------\n",
             OSTime, miss->TaskID, miss->TaskNumber);
-        fprintf(Output_fp,"%2u\tMissDeadline\ttask(%2u)(%2u)\t----------------- \n",
+        fprintf(Output_fp,"%2u\tMissDeadline\ttask(%2u)(%2u)\t------------------------\n",
             OSTime, miss->TaskID, miss->TaskNumber);
     }
     else
@@ -1100,22 +1098,12 @@ void  OSTimeTick(void)
         if (current_node_ptr!=NULL) { //null mean now is idle
             if (current_node_ptr->remaining > 0)
                 current_node_ptr->remaining--;
-            else
-                printf("error\n");
+
             if (current_node_ptr->remaining == 0)
             {
                 completion_flag = 1;
                 OS_FIFO_Dequeue(OS_FIFO_Queue);
             }
-            else
-            {
-                printf("task: %2u remaining: %2u\n", OSTCBCur->TaskID, current_node_ptr->remaining);
-            }
-
-        }
-        else
-        {
-            printf("idle\n");
         }
 
         OS_TCB* Miss_ptcb = NULL;
@@ -1138,7 +1126,7 @@ void  OSTimeTick(void)
                 ((OSTime - ptcb->ArriveTime) % ptcb->period == 0)) {
 
                 // Enqueue the job
-                printf("task (%2u)(%2d) enqueue\n", ptcb->OSTCBId,ptcb->TaskNumber);
+                //printf("task (%2u)(%2d) enqueue\n", ptcb->OSTCBId,ptcb->TaskNumber);
                 OS_FIFO_Enqueue(OS_FIFO_Queue, ptcb,OSTime);
             }
         }

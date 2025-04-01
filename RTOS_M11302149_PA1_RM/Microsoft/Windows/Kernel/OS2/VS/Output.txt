@@ -1,10 +1,10 @@
-Tick	Event	CurrenTask ID	NextTaskID	ResponseTime	OSTimeDly
+Tick	Event		CurrenTask ID	NextTaskID	ResponseTime	PreemptionTime	OSTimeDly
  1	Preemption	task( 1)( 0)	task( 2)( 0)
- 3	Completion	task( 2)( 0)	task( 1)( 0)	2	0	4
- 5	Completion	task( 1)( 0)	task( 3)( 0)	5	2	3
+ 3	Completion	task( 1)( 0)	task( 1)( 0)	       2	       0	      4
+ 5	Completion	task( 3)( 0)	task( 3)( 0)	       5	       2	      3
  7	Preemption	task( 3)( 0)	task( 2)( 1)
- 9	Completion	task( 2)( 1)	task( 1)( 1)	2	0	4
-12	Completion	task( 1)( 1)	task( 3)( 0)	4	1	4
+ 9	Completion	task( 1)( 1)	task( 1)( 1)	       2	       0	      4
+12	Completion	task( 3)( 0)	task( 3)( 0)	       4	       1	      4
 13	Preemption	task( 3)( 0)	task( 2)( 2)
-15	Completion	task( 2)( 2)	task( 3)( 0)	2	0	4
-15	MissDeadline	task( 3)( 0)	----------------- 
+15	Completion	task( 3)( 0)	task( 3)( 0)	       2	       0	      4
+15	MissDeadline	task( 3)( 0)	-----------------------

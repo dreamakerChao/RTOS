@@ -112,24 +112,6 @@ int  main (void)
         Task_STK[n] = malloc(TASK_STACKSIZE * sizeof(int));
     }
 
-/*
-    OSTaskCreateExt( StartupTask,                               /* Create the startup task                      
-                     0,
-                    &StartupTaskStk[APP_CFG_STARTUP_TASK_STK_SIZE - 1u],
-                     APP_CFG_STARTUP_TASK_PRIO,
-                     APP_CFG_STARTUP_TASK_PRIO,
-                    &StartupTaskStk[0u],
-                     APP_CFG_STARTUP_TASK_STK_SIZE,
-                     0u,
-                    (OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
-
-#if OS_TASK_NAME_EN > 0u
-    OSTaskNameSet(         APP_CFG_STARTUP_TASK_PRIO,
-                  (INT8U *)"Startup Task",
-                           &os_err);
-#endif
-*/
-
 
     /* Creat Task Set */
     for (int i =0 ;i<TASK_NUMBER; i++)
@@ -151,8 +133,8 @@ int  main (void)
     if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
         printf("Error open Output.txt!\n");
     }
-    fprintf(Output_fp,"Tick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
-    printf("Tick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
+    fprintf(Output_fp,"Tick\tEvent\t\tCurrenTask ID\tNextTaskID\tResponseTime\tPreemptionTime\tOSTimeDly\n");
+    printf("\nTick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
     fclose(Output_fp);
 
     OSTimeSet(0);
@@ -202,19 +184,7 @@ void task(void* p_arg) {
     task_para_set* task_data = (task_para_set*)p_arg;
     INT8U id = task_data->TaskID;
 
-    OS_TCB* ptcb = OSTCBPrioTbl[OSPrioCur];
-
     while (1) {
         OS_Dummy();
-
-        /*printf("Task %d running at tick %d, remaining: %d\n", ptcb->TaskID, OSTime, ptcb->remaining);
-
-        //BusyWait(1, task_data);
-        for (volatile int i = 0; i < 1200000; i++)
-        {
-            for (volatile int i = 0; i < 120000; i++);
-            OS_Dummy();
-        }*/
-
     }
 }

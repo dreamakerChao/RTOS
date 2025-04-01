@@ -152,8 +152,8 @@ int  main (void)
     if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
         printf("Error open Output.txt!\n");
     }
-    fprintf(Output_fp,"Tick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
-    printf("Tick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
+    fprintf(Output_fp, "Tick\tEvent\t\tCurrenTask ID\tNextTaskID\tResponseTime\tPreemptionTime\tOSTimeDly\n");
+    printf("\nTick\tEvent\tCurrenTask ID\tNextTaskID\tResponseTime\tOSTimeDly\n");
     fclose(Output_fp);
 
     OS_FIFO_Queue = (task_queue*)malloc(sizeof(task_queue));
@@ -210,15 +210,5 @@ void task(void* p_arg) {
 
     while (1) {
         OS_Dummy();
-
-        /*printf("Task %d running at tick %d, remaining: %d\n", ptcb->TaskID, OSTime, ptcb->remaining);
-
-        //BusyWait(1, task_data);
-        for (volatile int i = 0; i < 1200000; i++)
-        {
-            for (volatile int i = 0; i < 120000; i++);
-            OS_Dummy();
-        }*/
-
     }
 }
