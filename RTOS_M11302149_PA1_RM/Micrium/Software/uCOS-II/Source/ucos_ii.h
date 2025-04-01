@@ -623,9 +623,6 @@ typedef struct os_tcb {
 
     INT32U ArriveTime;
     INT32U deadline;
-    INT32U old_ArriveTime;
-    INT32U old_deadline;
-    INT32U old_TaskNumber;
     INT8U state;
     INT8U TaskID;
     

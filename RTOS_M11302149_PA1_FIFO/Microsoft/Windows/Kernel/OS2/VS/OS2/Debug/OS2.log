@@ -1,4 +1,5 @@
-﻿  os_core.c
+﻿  os_cpu_c.c
+  os_core.c
 D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(885,13): warning C4013: 'OS_FIFO_Enqueue' 未定義; 假設 extern 傳回整數
 D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(894,35): warning C4013: 'OS_FIFO_Peek' 未定義; 假設 extern 傳回整數
 D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(894,20): warning C4047: '正在初始化': 'task_node *' 與 'int' 間接取值的層級不同
@@ -14,4 +15,29 @@ D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1095,2
 D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1111,20): warning C4047: '正在初始化': 'task_node *' 與 'int' 間接取值的層級不同
 D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(1042,13): warning C4101: 'ptcb': 未參考的區域變數
 D:\RTOS\RTOS_M11302149_PA1_FIFO\Micrium\Software\uCOS-II\Source\os_core.c(2224,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+  os_dbg_r.c
+  os_flag.c
+  os_mbox.c
+  os_mem.c
+  os_mutex.c
+  os_q.c
+  os_sem.c
+  os_task.c
+  os_time.c
+  os_tmr.c
+  app_hooks.c
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\app_hooks.c(136,27): warning C4013: 'atoi' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\app_hooks.c(151,71): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\app_hooks.c(189,12): warning C4477: 'printf' : 格式字串 '%06x' 需要 'unsigned int' 類型的引數，但 variadic 引數 2 的類型為 'OS_TCB *'
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\app_hooks.c(366,39): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\app_hooks.c(396,5): warning C4013: 'free' 未定義; 假設 extern 傳回整數
+  main.c
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\main.c(108,16): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\main.c(108,14): warning C4047: '=': 'OS_STK **' 與 'int' 間接取值的層級不同
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\main.c(113,21): warning C4047: '=': 'OS_STK *' 與 'int' 間接取值的層級不同
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\main.c(141,29): warning C4244: '函式': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\main.c(160,5): warning C4013: 'OS_FIFO_InitQueue' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\main.c(88,17): warning C4101: 'os_err': 未參考的區域變數
+D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\main.c(207,25): warning C4244: '正在初始化': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+  正在產生程式碼...
   OS2.vcxproj -> D:\RTOS\RTOS_M11302149_PA1_FIFO\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe

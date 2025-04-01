@@ -878,7 +878,6 @@ void  OSStart (void)
         {
             ptcb->remaining = ptcb->execution_time;
             ptcb->deadline = ptcb->period;
-            ptcb->old_ArriveTime = 0;
             ptcb->state = 1;
             
         }
@@ -1111,11 +1110,9 @@ void  OSTimeTick(void)
                 }
 
             }
-            else
-                printf("error\n");
+
         }
-        else
-            printf("task idle\n");
+
 
         
 

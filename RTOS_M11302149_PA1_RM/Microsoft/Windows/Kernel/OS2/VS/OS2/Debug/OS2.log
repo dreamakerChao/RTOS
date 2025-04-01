@@ -1,4 +1,20 @@
-﻿  os_core.c
-D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_core.c(1065,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
-D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_core.c(2272,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+﻿  os_cpu_c.c
+  os_core.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_core.c(1064,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_core.c(2269,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+  os_dbg_r.c
+  os_flag.c
+  os_mbox.c
+  os_mem.c
+  os_mutex.c
+  os_q.c
+  os_sem.c
+  os_task.c
+  os_time.c
+  os_tmr.c
+  app_hooks.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Microsoft\Windows\Kernel\OS2\app_hooks.c(135,27): warning C4013: 'atoi' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA1_RM\Microsoft\Windows\Kernel\OS2\app_hooks.c(150,71): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\RTOS\RTOS_M11302149_PA1_RM\Microsoft\Windows\Kernel\OS2\app_hooks.c(188,12): warning C4477: 'printf' : 格式字串 '%06x' 需要 'unsigned int' 類型的引數，但 variadic 引數 2 的類型為 'OS_TCB *'
+  正在產生程式碼...
   OS2.vcxproj -> D:\RTOS\RTOS_M11302149_PA1_RM\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
