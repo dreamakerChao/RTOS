@@ -1002,8 +1002,6 @@ static void PrintTask(char type[11],const OS_TCB* miss) {
 
     if (strcmp(type, "Completion")==0)
     {
-        snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
-            OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber);
         printf("%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7u\n",
             OSTime,
             curr,
