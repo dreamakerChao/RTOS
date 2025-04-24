@@ -494,9 +494,9 @@ void  *OSQPend (OS_EVENT  *pevent,
     OSTCBCur->OSTCBStatPend  = OS_STAT_PEND_OK;
     OSTCBCur->OSTCBDly       = timeout;          /* Load timeout into TCB                              */
     OS_EventTaskWait(pevent);                    /* Suspend task until event or timeout occurs         */
-    OS_EXIT_CRITICAL();
-    OS_Sched();                                  /* Find next highest priority task ready to run       */
-    OS_ENTER_CRITICAL();
+    //OS_EXIT_CRITICAL();
+    //OS_Sched();                                  /* Find next highest priority task ready to run       */
+    //OS_ENTER_CRITICAL();
     switch (OSTCBCur->OSTCBStatPend) {                /* See if we timed-out or aborted                */
         case OS_STAT_PEND_OK:                         /* Extract message from TCB (Put there by QPost) */
              pmsg =  OSTCBCur->OSTCBMsg;
@@ -665,7 +665,7 @@ INT8U  OSQPost (OS_EVENT  *pevent,
                                                        /* Ready highest priority task waiting on event */
         (void)OS_EventTaskRdy(pevent, pmsg, OS_STAT_Q, OS_STAT_PEND_OK);
         OS_EXIT_CRITICAL();
-        OS_Sched();                                    /* Find highest priority task ready to run      */
+        //OS_Sched();                                    /* Find highest priority task ready to run      */
         OS_TRACE_Q_POST_EXIT(OS_ERR_NONE);
         return (OS_ERR_NONE);
     }

@@ -141,7 +141,8 @@ int  main (void)
 
     /*Create Task Set*/
 
-    serverMbox = OSMboxCreate((void*)0);
+    serverQ = OSQCreate(&serverQBuffer[0], APERIODIC_QUEUE_SIZE);
+
 
 
     OSTimeSet(0);
@@ -202,7 +203,7 @@ void CUS_Server_Task(void* p_arg) {
     aperiod_Param* job;
     INT8U err;
     while (1) {
-        job = (aperiod_Param*)OSMboxPend(serverMbox, 0, &err);
+        job = (aperiod_Param*)OSQPend(serverQ, 0, &err);
         if (job != NULL) {
             while (1) {
                 OS_Dummy();

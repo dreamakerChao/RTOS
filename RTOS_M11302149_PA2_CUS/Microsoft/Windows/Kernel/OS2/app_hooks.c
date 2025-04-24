@@ -148,6 +148,7 @@ void InputFile() {
             TaskParameter[TASK_NUMBER].TaskPeriodic = 0; // aperiodic
             server_cur = 0;
             Server_Para.Size = values[1];
+            Server_Para.Deadline = 0;
             TASK_NUMBER++;
         }
     }

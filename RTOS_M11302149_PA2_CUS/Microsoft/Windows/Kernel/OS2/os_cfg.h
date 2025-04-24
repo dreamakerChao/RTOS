@@ -151,4 +151,5 @@
 //#define OS_PROBE_HOOKS_EN          1u
 #define MAX_HEAP_SIZE 16
 #define OS_MAX_SERVER 16
+#define APERIODIC_QUEUE_SIZE  10
 #endif

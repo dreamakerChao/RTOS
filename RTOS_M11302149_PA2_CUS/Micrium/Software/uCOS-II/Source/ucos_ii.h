@@ -113,6 +113,7 @@ int Aperiod_NUMBER;
 /*Server parameter*/
 typedef struct sever_para {
     INT16U TaskID_server;
+    INT16U Deadline;
     INT16U Size;
 } sever_para;
 sever_para Server_Para;
@@ -457,7 +458,9 @@ typedef struct os_event {
 #endif
 } OS_EVENT;
 #endif
-OS_EVENT* serverMbox;
+//for server
+OS_EVENT* serverQ;
+void* serverQBuffer[APERIODIC_QUEUE_SIZE];
 
 /*
 *********************************************************************************************************

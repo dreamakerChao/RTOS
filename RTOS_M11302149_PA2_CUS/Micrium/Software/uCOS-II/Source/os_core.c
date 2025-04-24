@@ -110,6 +110,10 @@ static void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node);
 
 /*EDF*/
 
+/*server*/
+static void server_replenisher();
+/*server*/
+
 
 /*
 *********************************************************************************************************
@@ -960,6 +964,8 @@ void  OSStatInit (void)
 *********************************************************************************************************
 */
 static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
+    int is_server_task_cur = (node->task_id == Server_Para.TaskID_server);
+    int is_server_task_next = (OSTCBHighRdy->TaskID == Server_Para.TaskID_server);
 
     char idle_name[13] = "task(63)";
     char name1[13];
@@ -994,20 +1000,40 @@ static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
 
     if (strcmp(type, "Completion")==0)
     {
-        printf("%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7u\n",
-            OSTime,
-            curr,
-            next,
-            OSTime - node->arrival,
-            OSTime - node->arrival - OSTCBCur->execution_time,
-            node->deadline - OSTime);
-        fprintf(Output_fp,"%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7u\n",
-            OSTime,
-            curr,
-            next,
-            OSTime - node->arrival,
-            OSTime - node->arrival - OSTCBCur->execution_time,
-            node->deadline - OSTime);
+        if (is_server_task_cur) {
+            printf("%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7s\n",
+                OSTime,
+                curr,
+                next,
+                OSTime - AperiodList[node->job_no].TaskArriveTime,
+                OSTime - AperiodList[node->job_no].TaskArriveTime - AperiodList[node->job_no].TaskExecutionTime,
+                "N/A");
+            fprintf(Output_fp, "%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7s\n",
+                OSTime,
+                curr,
+                next,
+                OSTime - AperiodList[node->job_no].TaskArriveTime,
+                OSTime - AperiodList[node->job_no].TaskArriveTime - AperiodList[node->job_no].TaskExecutionTime,
+                "N/A");
+
+        }
+        else {
+            printf("%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7u\n",
+                OSTime,
+                curr,
+                next,
+                OSTime - node->arrival,
+                OSTime - node->arrival - OSTCBCur->execution_time,
+                node->deadline - OSTime);
+            fprintf(Output_fp, "%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7u\n",
+                OSTime,
+                curr,
+                next,
+                OSTime - node->arrival,
+                OSTime - node->arrival - OSTCBCur->execution_time,
+                node->deadline - OSTime);
+
+        }
 
     }
     else if (strcmp(type, "Preemption")==0)
@@ -2336,7 +2362,7 @@ void EDF_print() {
         return;
     for (int i = 0; i < heap_size; i++) {
         EDF_Node* node = edf_heap[i];
-        printf("(%u,%u) ",node->task_id,node->job_no);
+        printf("(%u,%u,%u) ",node->task_id,node->job_no,node->executetime);
     }
     printf("\n");
 }
@@ -2384,11 +2410,12 @@ BOOLEAN Activer() {
         if (ptcb->period == 0) { //server
             if (AperiodList[server_cur].TaskArriveTime == current_time)
             {
-                //mbox
-                if (OSMboxPost(serverMbox, &AperiodList[server_cur]) == OS_ERR_MBOX_FULL) {
-                    printf("Mailbox full. Dropping job!\n");
+                //Q
+                if (OSQPost(serverQ, &AperiodList[server_cur])!= OS_ERR_NONE) {
+                    printf("Q full. Dropping job!\n");
                 }
                 else {
+                    server_replenisher();
                     EDF_Node* new_node = (EDF_Node*)malloc(sizeof(EDF_Node));
                     if (new_node == NULL) {
                         // Memory allocation failure, continue to next task
@@ -2398,7 +2425,7 @@ BOOLEAN Activer() {
                     new_node->task_id = Server_Para.TaskID_server;
                     new_node->executetime = AperiodList[server_cur].TaskExecutionTime;
                     new_node->deadline = AperiodList[server_cur].TaskDeadLine;
-                    new_node->job_no = AperiodList[server_cur].TaskDeadLine; // for print
+                    new_node->job_no = AperiodList[server_cur].TaskID; // for print
 
                     new_node->flag = NORMAL;
                     new_node->miss_reported = 0;
@@ -2491,3 +2518,24 @@ void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node) {
         printf("SW to %u\n", OSPrioHighRdy);
     }
 }
+
+void server_replenisher() {
+    INT32U now = OSTimeGet();
+    INT8U perr;
+
+    if (now >= Server_Para.Deadline) {
+        aperiod_Param* job = (aperiod_Param*)OSQAccept(serverQ, &perr);  // Peek queue
+        if (job!= NULL && perr != OS_ERR_Q_EMPTY) { //backlogged
+            
+            INT32U e = job->TaskExecutionTime;
+
+            // R3(a) replenish
+            Server_Para.Deadline = (INT16U)(job->TaskArriveTime + (e * 100 /Server_Para.Size));
+            printf("[Replenish ] Deadline extended to %u\n", Server_Para.Deadline);
+        }
+        else {
+            // R3(b): idle, do nothing
+        }
+    }
+}
+
