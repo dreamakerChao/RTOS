@@ -1,18 +1,9 @@
 ﻿  os_core.c
-D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(1084,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
-D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(1062,13): warning C4101: 'ptcb': 未參考的區域變數
-D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2166,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2378,13): warning C4013: 'free' 未定義; 假設 extern 傳回整數
-D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2419,53): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
-D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2425,52): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2428,63): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-  os_task.c
-  main.c
-D:\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(105,16): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
-D:\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(105,14): warning C4047: '=': 'OS_STK **' 與 'int' 間接取值的層級不同
-D:\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(110,21): warning C4047: '=': 'OS_STK *' 與 'int' 間接取值的層級不同
-D:\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(121,33): warning C4244: '函式': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(132,33): warning C4244: '函式': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(85,17): warning C4101: 'os_err': 未參考的區域變數
-  正在產生程式碼...
+D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(1086,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(1064,13): warning C4101: 'ptcb': 未參考的區域變數
+D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2169,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2381,13): warning C4013: 'free' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2424,57): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
+D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2429,56): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2432,67): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
   OS2.vcxproj -> D:\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe

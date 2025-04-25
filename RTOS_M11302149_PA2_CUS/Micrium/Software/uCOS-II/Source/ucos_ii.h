@@ -114,6 +114,7 @@ int Aperiod_NUMBER;
 typedef struct sever_para {
     INT16U TaskID_server;
     INT16U Deadline;
+    INT16U Budget;
     INT16U Size;
 } sever_para;
 sever_para Server_Para;
@@ -722,6 +723,7 @@ typedef struct EDF_Node{
 
 EDF_Node* edf_heap[MAX_HEAP_SIZE];
 int heap_size;
+void EDF_HeapInsert(EDF_Node* node);
 /*task node heap*/
 
 /*

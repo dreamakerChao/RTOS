@@ -200,15 +200,8 @@ void task(void* p_arg) {
 }
 
 void CUS_Server_Task(void* p_arg) {
-    aperiod_Param* job;
-    INT8U err;
     while (1) {
-        job = (aperiod_Param*)OSQPend(serverQ, 0, &err);
-        if (job != NULL) {
-            while (1) {
-                OS_Dummy();
-            }
-            
-        }
+        OS_Dummy();
+
     }
 }
