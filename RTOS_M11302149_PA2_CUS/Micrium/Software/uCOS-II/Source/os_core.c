@@ -2424,15 +2424,6 @@ BOOLEAN Activer() {
                     printf("Q Posted\n");
                 }
                 server_replenisher(OS_FALSE);
-                if (AperiodList[server_cur].TaskDeadLine < Server_Para.Deadline && job !=NULL) {
-                    printf("%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", current_time,AperiodList[server_cur].TaskID);
-                    if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
-                        printf("Error open Output.txt!\n");
-                    }
-                    fprintf(Output_fp,"%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", current_time, AperiodList[server_cur].TaskID);
-                    fclose(Output_fp);
-                    OSQAccept(serverQ,&perr);
-                }
 
                 server_cur++;
             }
@@ -2546,9 +2537,12 @@ void server_replenisher(BOOLEAN type) {
     if (type == OS_FALSE && job!=NULL) {
         //arrival
         OS_Q* q = serverQ->OSEventPtr;
-        if (AperiodList[server_cur].TaskDeadLine < (INT16U)(job->TaskArriveTime + (job->TaskExecutionTime * 100 / Server_Para.Size))) {
-            printf("%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", now, AperiodList[server_cur].TaskID);
-            fprintf(Output_fp, "%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", now, AperiodList[server_cur].TaskID);
+        if (AperiodList[server_cur].TaskDeadLine < 
+            (INT16U)(job->TaskArriveTime + (job->TaskExecutionTime * 100 / Server_Para.Size))) {
+            printf("%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", 
+                now, AperiodList[server_cur].TaskID);
+            fprintf(Output_fp, "%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", 
+                now, AperiodList[server_cur].TaskID);
             OSQAccept(serverQ, &perr);
         }
         else if (now >= Server_Para.Deadline && q->OSQEntries == 1) {
@@ -2558,8 +2552,10 @@ void server_replenisher(BOOLEAN type) {
             Server_Para.Budget = e;
 
 
-            printf("%2u\tAperiodic job (%2u) arrives and sets CUS server・s deadline as %2u. \n", now,job->TaskID, Server_Para.Deadline);
-            fprintf(Output_fp,"%2u\tAperiodic job (%2u) arrives and sets CUS server・s deadline as %2u. \n", now,job->TaskID, Server_Para.Deadline);
+            printf("%2u\tAperiodic job (%2u) arrives and sets CUS server・s deadline as %2u. \n",
+                now,job->TaskID, Server_Para.Deadline);
+            fprintf(Output_fp,"%2u\tAperiodic job (%2u) arrives and sets CUS server・s deadline as %2u. \n", 
+                now,job->TaskID, Server_Para.Deadline);
             INT8U err;
             aperiod_Param* job = (aperiod_Param*)OSQPeekHead(serverQ, &err);
             EDF_Node* node = (EDF_Node*)malloc(sizeof(EDF_Node));
@@ -2588,8 +2584,10 @@ void server_replenisher(BOOLEAN type) {
             Server_Para.Deadline = (INT16U)(Server_Para.Deadline + (e * 100 / Server_Para.Size));
             Server_Para.Budget = e;
 
-            printf("%2u\tAperiodic job (%2u) sets CUS server・s deadline as %3u.\n", now, job->TaskID, Server_Para.Deadline);
-            fprintf(Output_fp,"%2u\tAperiodic job (%2u) sets CUS server・s deadline as %3u.\n", now, job->TaskID, Server_Para.Deadline);
+            printf("%2u\tAperiodic job (%2u) sets CUS server・s deadline as %3u.\n", 
+                now, job->TaskID, Server_Para.Deadline);
+            fprintf(Output_fp,"%2u\tAperiodic job (%2u) sets CUS server・s deadline as %3u.\n",
+                now, job->TaskID, Server_Para.Deadline);
 
             INT8U err;
             aperiod_Param* job = (aperiod_Param*)OSQPeekHead(serverQ, &err);
