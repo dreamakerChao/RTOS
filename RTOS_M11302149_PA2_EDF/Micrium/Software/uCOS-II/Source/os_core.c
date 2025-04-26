@@ -2331,9 +2331,12 @@ EDF_Node* EDF_check_miss() {
 }
 
 void EDF_print() {
-    printf("Tick %u: heap: ",OSTime);
-    if (heap_size == 0)
+    printf("Tick %u: heap: ", OSTime);
+    if (heap_size == 0) {
+        printf("HEAP Empty\n");
         return;
+    }
+
     for (int i = 0; i < heap_size; i++) {
         EDF_Node* node = edf_heap[i];
         printf("(%u,%u) ",node->task_id,node->job_no);
@@ -2455,10 +2458,10 @@ void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node) {
     if (done == OS_TRUE) {
         PrintTask("Completion", min_node_copy, NULL);
         free(min_node_copy);
-        printf("SW to %u\n", OSPrioHighRdy);
+        //printf("SW to %u\n", OSPrioHighRdy);
     }
     else if (OSTCBHighRdy != OSTCBCur && OSTime != 0) {
         PrintTask("Preemption", min_node, NULL);
-        printf("SW to %u\n", OSPrioHighRdy);
+        //printf("SW to %u\n", OSPrioHighRdy);
     }
 }

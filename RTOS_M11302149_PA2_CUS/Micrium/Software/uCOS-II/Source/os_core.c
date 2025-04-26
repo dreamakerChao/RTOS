@@ -112,7 +112,8 @@ static void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node);
 
 /*server*/
 void server_replenisher(BOOLEAN type);
-aperiod_Param* OSQPeek(OS_EVENT* pevent, INT8U* perr);
+aperiod_Param* OSQPeekHead(OS_EVENT* pevent, INT8U* perr);
+aperiod_Param* OSQPeekTail(OS_EVENT* pevent, INT8U* perr);
 /*server*/
 
 
@@ -966,8 +967,7 @@ void  OSStatInit (void)
 *********************************************************************************************************
 */
 static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
-    int is_server_task_cur = (node->task_id == Server_Para.TaskID_server);
-    int is_server_task_next = (OSTCBHighRdy->TaskID == Server_Para.TaskID_server);
+    int is_server_task_cur = 0;
 
     char idle_name[13] = "task(63)";
     char name1[13];
@@ -983,6 +983,7 @@ static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
     // Format current and next task names with TaskID and TaskNumber
     if (node != NULL)
     {
+        is_server_task_cur = (node->task_id == Server_Para.TaskID_server);
         snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
             OSTCBCur->TaskID, OSTCBCur->TaskNumber);
         if (OSTCBCur == OSTCBHighRdy)
@@ -1088,9 +1089,10 @@ void  OSTimeTick(void)
         /*Setting the end time for the OS*/
 
         Consumer();
-        server_replenisher(OS_TRUE);
+        
         EDF_Node* min_node = Checker();
         BOOLEAN new_job_in = Activer();
+        server_replenisher(OS_TRUE);
         EDF_Scheduler(new_job_in, min_node);
         EDF_print();
 
@@ -2334,7 +2336,9 @@ void EDF_HeapInsert(EDF_Node* node) {
 EDF_Node* EDF_HeapExtractMin() {
     if (heap_size == 0) return NULL;
     EDF_Node* min_node = edf_heap[0];
-    edf_heap[0] = edf_heap[--heap_size];
+    --heap_size;
+    edf_heap[0] = edf_heap[heap_size];
+    edf_heap[heap_size] = NULL;
     heap_down(0);
     return min_node;
 }
@@ -2365,7 +2369,7 @@ void EDF_print() {
         return;
     for (int i = 0; i < heap_size; i++) {
         EDF_Node* node = edf_heap[i];
-        printf("(%u,%u,%u) ",node->task_id,node->job_no,node->executetime);
+        printf("(%u,%u,%u,%u) ",node->task_id,node->job_no,node->executetime,node->deadline);
     }
     printf("\n");
 }
@@ -2411,35 +2415,25 @@ BOOLEAN Activer() {
         if (ptcb->period == 0) { //server
             if (AperiodList[server_cur].TaskArriveTime == current_time)
             {
-                if (AperiodList[server_cur].TaskDeadLine < Server_Para.Deadline) {
-                    printf("Aperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", AperiodList[server_cur].TaskID);
+                INT8U perr;
+                aperiod_Param* job = (aperiod_Param*)OSQPeekTail(serverQ, &perr);  // Peek queue
+                if (OSQPost(serverQ, &AperiodList[server_cur]) != OS_ERR_NONE) {
+                    printf("Q full. Dropping job!\n");
                 }
-                //Q
                 else {
-                    if (OSQPost(serverQ, &AperiodList[server_cur]) != OS_ERR_NONE) {
-                        printf("Q full. Dropping job!\n");
-                    }
-                    else {
-                        server_replenisher(OS_FALSE);
-                        EDF_Node* new_node = (EDF_Node*)malloc(sizeof(EDF_Node));
-                        if (new_node == NULL) {
-                            printf("Malloc failed for EDF_Node, dropping job %d\n", AperiodList[server_cur].TaskID);
-                            continue;
-                        }
-                        new_node->task_id = Server_Para.TaskID_server;
-                        new_node->executetime = AperiodList[server_cur].TaskExecutionTime;
-                        new_node->deadline = AperiodList[server_cur].TaskDeadLine;
-                        new_node->job_no = AperiodList[server_cur].TaskID;
-                        new_node->arrival = OSTime;
-                        new_node->flag = NORMAL;
-                        new_node->miss_reported = 0;
-
-                        new_job = OS_TRUE; // Mark that a new job was generated
-
-                        EDF_HeapInsert(new_node);
-                        printf("Job %d posted to EDF heap\n", AperiodList[server_cur].TaskID);
-                    }
+                    printf("Q Posted\n");
                 }
+                server_replenisher(OS_FALSE);
+                if (AperiodList[server_cur].TaskDeadLine < Server_Para.Deadline && job !=NULL) {
+                    printf("%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", current_time,AperiodList[server_cur].TaskID);
+                    if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
+                        printf("Error open Output.txt!\n");
+                    }
+                    fprintf(Output_fp,"%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", current_time, AperiodList[server_cur].TaskID);
+                    fclose(Output_fp);
+                    OSQAccept(serverQ,&perr);
+                }
+
                 server_cur++;
             }
         }
@@ -2494,13 +2488,15 @@ void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node) {
             min_node_copy = EDF_HeapExtractMin();
             if (min_node->task_id == Server_Para.TaskID_server)
             {
+                
+
                 INT8U err;
-                (void)OSQAccept(serverQ, &err); // deQ
-                printf("%2u\tAperiodic job (%2u) is finished.\n", OSTime,min_node->task_id);
+                aperiod_Param* msg  = OSQAccept(serverQ, &err); // deQ
+                printf("%2u\tAperiodic job (%2u) is finished.\n", OSTime, msg->TaskID);
                 if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
                     printf("Error open Output.txt!\n");
                 }
-                fprintf(Output_fp,"%2u\tAperiodic job (%2u) is finished.\n", OSTime,min_node->task_id);
+                fprintf(Output_fp, "%2u\tAperiodic job (%2u) is finished.\n", OSTime, msg->TaskID);
                 fclose(Output_fp);
             }
         }
@@ -2540,7 +2536,7 @@ void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node) {
 void server_replenisher(BOOLEAN type) {
     INT32U now = OSTimeGet();
     INT8U perr;
-    aperiod_Param* job = (aperiod_Param*)OSQPeek(serverQ, &perr);  // Peek queue
+    aperiod_Param* job = (aperiod_Param*)OSQPeekTail(serverQ, &perr);  // Peek queue
     int backlogged = (job != NULL && perr == OS_ERR_NONE);
 
     if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
@@ -2549,7 +2545,13 @@ void server_replenisher(BOOLEAN type) {
 
     if (type == OS_FALSE && job!=NULL) {
         //arrival
-        if (now >= Server_Para.Deadline) {
+        OS_Q* q = serverQ->OSEventPtr;
+        if (AperiodList[server_cur].TaskDeadLine < (INT16U)(job->TaskArriveTime + (job->TaskExecutionTime * 100 / Server_Para.Size))) {
+            printf("%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", now, AperiodList[server_cur].TaskID);
+            fprintf(Output_fp, "%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline) .\n", now, AperiodList[server_cur].TaskID);
+            OSQAccept(serverQ, &perr);
+        }
+        else if (now >= Server_Para.Deadline && q->OSQEntries == 1) {
             INT32U e = job->TaskExecutionTime;
 
             Server_Para.Deadline = (INT16U)(job->TaskArriveTime + (e * 100 / Server_Para.Size));
@@ -2558,6 +2560,20 @@ void server_replenisher(BOOLEAN type) {
 
             printf("%2u\tAperiodic job (%2u) arrives and sets CUS server・s deadline as %2u. \n", now,job->TaskID, Server_Para.Deadline);
             fprintf(Output_fp,"%2u\tAperiodic job (%2u) arrives and sets CUS server・s deadline as %2u. \n", now,job->TaskID, Server_Para.Deadline);
+            INT8U err;
+            aperiod_Param* job = (aperiod_Param*)OSQPeekHead(serverQ, &err);
+            EDF_Node* node = (EDF_Node*)malloc(sizeof(EDF_Node));
+            if (node) {
+                node->task_id = Server_Para.TaskID_server;
+                node->job_no = job->TaskID;
+                node->arrival = now;
+                node->deadline = Server_Para.Deadline;
+                node->executetime = job->TaskExecutionTime;
+                node->flag = NORMAL;
+                node->miss_reported = 0;
+                EDF_HeapInsert(node);
+                printf("Inssert job (%2u) to heap", job->TaskID);
+            }
         }
         else {
             printf("%2u\tAperiodic job (%2u) arrives. Do nothing.\n", now, job->TaskID);
@@ -2574,17 +2590,54 @@ void server_replenisher(BOOLEAN type) {
 
             printf("%2u\tAperiodic job (%2u) sets CUS server・s deadline as %3u.\n", now, job->TaskID, Server_Para.Deadline);
             fprintf(Output_fp,"%2u\tAperiodic job (%2u) sets CUS server・s deadline as %3u.\n", now, job->TaskID, Server_Para.Deadline);
+
+            INT8U err;
+            aperiod_Param* job = (aperiod_Param*)OSQPeekHead(serverQ, &err);
+            EDF_Node* node = (EDF_Node*)malloc(sizeof(EDF_Node));
+            if (node) {
+                node->task_id = Server_Para.TaskID_server;
+                node->job_no = job->TaskID;
+                node->arrival = now;
+                node->deadline = Server_Para.Deadline;
+                node->executetime = job->TaskExecutionTime;
+                node->flag = NORMAL;
+                node->miss_reported = 0;
+                EDF_HeapInsert(node);
+                printf("Inssert job (%2u) to heap", job->TaskID);
+            }
         }
     }
     fclose(Output_fp);
 
 }
 
-aperiod_Param* OSQPeek(OS_EVENT* pevent, INT8U* perr) {
+aperiod_Param* OSQPeekHead(OS_EVENT* pevent, INT8U* perr) {
+    aperiod_Param* msg = NULL;
+    OS_Q* q;
+    if (perr == NULL) return NULL;
+    OS_ENTER_CRITICAL();
+    if (pevent->OSEventType != OS_EVENT_TYPE_Q) {
+        *perr = OS_ERR_EVENT_TYPE;
+    }
+    else {
+        q = (OS_Q*)pevent->OSEventPtr;
+        if (q->OSQEntries == 0) {
+            *perr = OS_ERR_Q_EMPTY;
+        }
+        else {
+            msg = *((aperiod_Param**)q->OSQOut);
+            *perr = OS_ERR_NONE;
+        }
+    }
+    OS_EXIT_CRITICAL();
+    return msg;
+}
+
+aperiod_Param* OSQPeekTail(OS_EVENT* pevent, INT8U* perr) {
     aperiod_Param* msg = NULL;
     OS_Q* q;
     void** last_ptr;
-
+    if (perr == NULL) return NULL;
     OS_ENTER_CRITICAL();
     if (pevent->OSEventType != OS_EVENT_TYPE_Q) {
         *perr = OS_ERR_EVENT_TYPE;
