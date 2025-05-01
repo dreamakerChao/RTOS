@@ -115,7 +115,7 @@ void server_replenisher(BOOLEAN type);
 aperiod_Param* OSQPeekHead(OS_EVENT* pevent, INT8U* perr);
 aperiod_Param* OSQPeekTail(OS_EVENT* pevent, INT8U* perr);
 /*server*/
-
+static INT16U max(INT16U a, INT16U b);
 
 /*
 *********************************************************************************************************
@@ -1001,6 +1001,7 @@ static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
     if (OSTCBHighRdy->OSTCBPrio == OS_TASK_IDLE_PRIO)
         next = idle_name;
 
+
     if (strcmp(type, "Completion")==0)
     {
         if (is_server_task_cur) {
@@ -1009,14 +1010,14 @@ static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
                 curr,
                 next,
                 OSTime - AperiodList[node->job_no].TaskArriveTime,
-                OSTime - AperiodList[node->job_no].TaskArriveTime - AperiodList[node->job_no].TaskExecutionTime,
+                OSTime - max(AperiodList[node->job_no].TaskArriveTime, Server_Para.Old_Deadline) - AperiodList[node->job_no].TaskExecutionTime,
                 "N/A");
             fprintf(Output_fp, "%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7s\n",
                 OSTime,
                 curr,
                 next,
                 OSTime - AperiodList[node->job_no].TaskArriveTime,
-                OSTime - AperiodList[node->job_no].TaskArriveTime - AperiodList[node->job_no].TaskExecutionTime,
+                OSTime - max(AperiodList[node->job_no].TaskArriveTime, Server_Para.Old_Deadline) - AperiodList[node->job_no].TaskExecutionTime,
                 "N/A");
 
         }
@@ -2548,6 +2549,7 @@ void server_replenisher(BOOLEAN type) {
         else if (now >= Server_Para.Deadline && q->OSQEntries == 1) {
             INT32U e = job->TaskExecutionTime;
 
+            Server_Para.Old_Deadline = Server_Para.Deadline;
             Server_Para.Deadline = (INT16U)(job->TaskArriveTime + (e * 100 / Server_Para.Size));
             Server_Para.Budget = e;
 
@@ -2581,8 +2583,10 @@ void server_replenisher(BOOLEAN type) {
         if (now == Server_Para.Deadline &&backlogged) {
             INT32U e = job->TaskExecutionTime;
 
+            Server_Para.Old_Deadline = Server_Para.Deadline;
             Server_Para.Deadline = (INT16U)(Server_Para.Deadline + (e * 100 / Server_Para.Size));
             Server_Para.Budget = e;
+
 
             printf("%2u\tAperiodic job (%2u) sets CUS server¡¦s deadline as %3u.\n", 
                 now, job->TaskID, Server_Para.Deadline);
@@ -2656,4 +2660,10 @@ aperiod_Param* OSQPeekTail(OS_EVENT* pevent, INT8U* perr) {
     }
     OS_EXIT_CRITICAL();
     return msg;
+}
+INT16U max(INT16U a, INT16U b) {
+    if (a >= b)
+        return a;
+    else
+        return b;
 }

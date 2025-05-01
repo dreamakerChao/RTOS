@@ -116,6 +116,7 @@ typedef struct sever_para {
     INT16U Deadline;
     INT16U Budget;
     INT16U Size;
+    INT16U Old_Deadline;
 } sever_para;
 sever_para Server_Para;
 int server_cur;

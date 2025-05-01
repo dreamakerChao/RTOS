@@ -37,8 +37,7 @@
               "RelativeToolTip": "..\\..\\..\\..\\..\\Micrium\\Software\\uCOS-II\\Source\\ucos_ii.h",
               "ViewState": "AgIAAEIFAAAAAAAAAAAvwFAFAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-26T08:33:53.759Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-26T08:33:53.759Z"
             },
             {
               "$type": "Document",
@@ -50,8 +49,7 @@
               "RelativeToolTip": "..\\..\\..\\..\\..\\Micrium\\Software\\uCOS-II\\Ports\\Win32\\Visual Studio\\os_cpu_c.c",
               "ViewState": "AgIAAM8EAAAAAAAAAAAwwKAEAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2025-04-26T08:15:04.111Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-26T08:15:04.111Z"
             },
             {
               "$type": "Document",
@@ -61,7 +59,7 @@
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\Micrium\\Software\\uCOS-II\\Source\\os_core.c",
               "ToolTip": "D:\\RTOS\\RTOS_M11302149_PA2_EDF\\Micrium\\Software\\uCOS-II\\Source\\os_core.c",
               "RelativeToolTip": "..\\..\\..\\..\\..\\Micrium\\Software\\uCOS-II\\Source\\os_core.c",
-              "ViewState": "AgIAAG4DAAAAAAAAAAAvwIUDAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAAL4DAAAAAAAAAAAuwMEDAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
               "WhenOpened": "2025-04-26T06:47:43.333Z",
               "EditorCaption": ""
@@ -76,8 +74,7 @@
               "RelativeToolTip": "..\\..\\lib_cfg.h",
               "ViewState": "AgIAAE0AAAAAAAAAAAAvwFsAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-26T06:47:34.158Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-26T06:47:34.158Z"
             },
             {
               "$type": "Document",
@@ -89,8 +86,7 @@
               "RelativeToolTip": "..\\app_hooks.c",
               "ViewState": "AgIAAEEBAAAAAAAAAAAEwFABAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
-              "WhenOpened": "2025-04-26T06:47:02.52Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-26T06:47:02.52Z"
             }
           ]
         }
