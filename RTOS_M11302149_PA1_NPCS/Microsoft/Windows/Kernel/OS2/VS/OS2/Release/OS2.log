@@ -1,0 +1,47 @@
+﻿  cpu_core.c
+  cpu_c.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uC-CPU\cpu_core.h(105,11): error C1083: 無法開啟包含檔案: 'cpu.h': No such file or directory
+  (編譯來源檔案 '../../../../../Micrium/Software/uC-CPU/cpu_core.c')
+  
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uC-CPU\Win32\Visual_Studio\cpu_c.c(45,11): error C1083: 無法開啟包含檔案: 'cpu.h': No such file or directory
+  lib_ascii.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uC-LIB\lib_ascii.c(85,11): error C1083: 無法開啟包含檔案: 'lib_ascii.h': No such file or directory
+  lib_math.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uC-LIB\lib_math.c(72,11): error C1083: 無法開啟包含檔案: 'lib_math.h': No such file or directory
+  lib_mem.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uC-LIB\lib_mem.h(110,11): error C1083: 無法開啟包含檔案: 'cpu.h': No such file or directory
+  (編譯來源檔案 '../../../../../Micrium/Software/uC-LIB/lib_mem.c')
+  
+  lib_str.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uC-LIB\lib_str.c(73,11): error C1083: 無法開啟包含檔案: 'lib_str.h': No such file or directory
+  os_cpu_c.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Ports\Win32\Visual Studio\os_cpu_c.c(46,11): error C1083: 無法開啟包含檔案: 'lib_def.h': No such file or directory
+  os_core.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_core.c(37,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_dbg_r.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_dbg_r.c(26,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_flag.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_flag.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_mbox.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_mbox.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_mem.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_mem.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_mutex.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_mutex.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_q.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_q.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_sem.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_sem.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_task.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_task.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_time.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_time.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  os_tmr.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Micrium\Software\uCOS-II\Source\os_tmr.c(36,10): error C1083: 無法開啟包含檔案: 'ucos_ii.h': No such file or directory
+  bsp_cpu.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Microsoft\BSP\Windows\bsp_cpu.c(37,11): error C1083: 無法開啟包含檔案: 'cpu_core.h': No such file or directory
+  app_hooks.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Microsoft\Windows\Kernel\OS2\app_hooks.c(38,11): error C1083: 無法開啟包含檔案: 'os.h': No such file or directory
+  正在編譯...
+  main.c
+D:\RTOS\RTOS_M11302149_PA1_RM\Microsoft\Windows\Kernel\OS2\main.c(37,11): error C1083: 無法開啟包含檔案: 'cpu.h': No such file or directory
