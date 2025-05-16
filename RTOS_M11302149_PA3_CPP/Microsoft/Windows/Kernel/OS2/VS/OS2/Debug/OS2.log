@@ -1,0 +1,10 @@
+﻿  os_core.c
+D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Micrium\Software\uCOS-II\Source\os_core.c(1074,15): warning C4047: '正在初始化': 'void *' 與 'BOOLEAN' 間接取值的層級不同
+D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Micrium\Software\uCOS-II\Source\os_core.c(1114,15): warning C4047: '正在初始化': 'void *' 與 'BOOLEAN' 間接取值的層級不同
+D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Micrium\Software\uCOS-II\Source\os_core.c(1179,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
+D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Micrium\Software\uCOS-II\Source\os_core.c(2430,33): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Micrium\Software\uCOS-II\Source\os_core.c(2431,27): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Micrium\Software\uCOS-II\Source\os_core.c(2433,29): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Micrium\Software\uCOS-II\Source\os_core.c(2434,29): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Micrium\Software\uCOS-II\Source\os_core.c(2439,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+  OS2.vcxproj -> D:\113-2\RTOS\RTOS_M11302149_PA3_CPP\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
