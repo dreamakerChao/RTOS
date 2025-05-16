@@ -1,8 +1,8 @@
 ﻿  os_core.c
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(1108,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2352,33): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2353,27): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2355,29): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2356,29): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2361,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(1104,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
+D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2356,33): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2357,27): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2359,29): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2360,29): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2365,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
   OS2.vcxproj -> D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe

@@ -63,7 +63,7 @@ extern "C" {
 *********************************************************************************************************
 */
 /*END time for the simulation*/
-#define SYSTEM_END_TIME 30
+#define SYSTEM_END_TIME 100
 
 /*Input File*/
 FILE* fp;
@@ -635,11 +635,18 @@ typedef struct os_tcb {
     INT32U deadline;
     INT8U state;
     INT8U TaskID;
-	INT8S inCriticalSection; // -1  = no locked, >0 = locked by value
+
+    int holding_r1;
+    int holding_r2;
+
 	INT8U R1_LockTime;
 	INT8U R1_UnlockTime;
 	INT8U R2_LockTime;
 	INT8U R2_UnlockTime;
+
+    INT32U BlockingTime;
+    INT32U BlockingStartTick;
+    int  IsBlocked; // 1: blocked, 0: not blocked
 
     
 #endif

@@ -721,7 +721,6 @@ void  OSIntExit (void)
 #endif
 #endif
                     OS_TRACE_ISR_EXIT_TO_SCHEDULER();
-
                     OSIntCtxSw();                          /* Perform interrupt level ctx switch       */
                 } else {
                     OS_TRACE_ISR_EXIT();
@@ -979,10 +978,6 @@ static void PrintTask(char type[11],const OS_TCB* miss) {
     char* curr = name1;
     char* next = name2;
 
-    if ((Output_err = fopen_s(&Output_fp, "./Output.txt", "a")) != 0) {
-        printf("Error open Output.txt!\n");
-    }
-
     // Format current and next task names with TaskID and TaskNumber
     snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
         OSTCBCur->TaskID, OSTCBCur->TaskNumber);
@@ -1006,15 +1001,17 @@ static void PrintTask(char type[11],const OS_TCB* miss) {
             curr,
             next,
             OSTime - OSTCBCur->ArriveTime,
-            OSTime - OSTCBCur->ArriveTime - OSTCBCur->execution_time,
-            OSTCBCur->deadline - OSTime);
+            OSTCBCur->BlockingTime,
+            OSTime - OSTCBCur->ArriveTime - OSTCBCur->BlockingTime - OSTCBCur->execution_time
+        );
         fprintf(Output_fp,"%2u\tCompletion\t%-12s\t%-12s\t%8u\t%8u\t%7u\n",
             OSTime,
             curr,
             next,
             OSTime - OSTCBCur->ArriveTime,
-            OSTime - OSTCBCur->ArriveTime - OSTCBCur->execution_time,
-            OSTCBCur->deadline - OSTime);
+            OSTCBCur->BlockingTime,
+            OSTime - OSTCBCur->ArriveTime - OSTCBCur->BlockingTime - OSTCBCur->execution_time
+        );
 
     }
     else if (strcmp(type, "Preemption")==0)
@@ -1035,50 +1032,50 @@ static void PrintTask(char type[11],const OS_TCB* miss) {
     {
         printf("printting wrong!\n");
     }
-    fclose(Output_fp);
+
 }
 
 void resource_manager(OS_TCB* ptcb) {
-    INT8U now = OSTime;
+    INT32U now = ptcb->execution_time - ptcb->remaining;
+    INT32U now_time = OSTimeGet();
 
     // Lock R1
-    if (now == ptcb->R1_LockTime && ptcb->inCriticalSection == -1) {
+    if (now == ptcb->R1_LockTime && !ptcb->holding_r1 && ptcb->R1_LockTime !=0) {
         if (R1_Owner == -1) {
-            R1_Owner = ptcb->OSTCBPrio;
-            ptcb->inCriticalSection = 1;
-            fprintf(fp, "%d LockResource task(%d)(%d) - - - - R1\n", now, ptcb->TaskID, ptcb->TaskID);
-        }
-        else {
-            fprintf(fp, "%d Blocking task(%d)(%d) - - - - R1\n", now, ptcb->TaskID, ptcb->TaskID);
+            R1_Owner = ptcb->TaskID;
+            ptcb->holding_r1 = 1;
+            fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+            printf("%d   LockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
         }
     }
 
     // Unlock R1
-    if (now == ptcb->R1_UnlockTime && ptcb->inCriticalSection == 1) {
+    if (now == ptcb->R1_UnlockTime && ptcb->holding_r1 && ptcb->R1_UnlockTime != 0) {
         R1_Owner = -1;
-        ptcb->inCriticalSection = -1;
-        fprintf(fp, "%d UnlockResource task(%d)(%d) - - - - R1\n", now, ptcb->TaskID, ptcb->TaskID);
+        ptcb->holding_r1 = 0;
+        fprintf(Output_fp, "%d UnlockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+        printf("%d UnlockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
     }
 
     // Lock R2
-    if (now == ptcb->R2_LockTime && ptcb->inCriticalSection == -1) {
+    if (now == ptcb->R2_LockTime && !ptcb->holding_r2 && ptcb->R2_LockTime != 0) {
         if (R2_Owner == -1) {
-            R2_Owner = ptcb->OSTCBPrio;
-            ptcb->inCriticalSection = 2;
-            fprintf(fp, "%d LockResource task(%d)(%d) - - - - R2\n", now, ptcb->TaskID, ptcb->TaskID);
-        }
-        else {
-            fprintf(fp, "%d Blocking task(%d)(%d) - - - - R2\n", now, ptcb->TaskID, ptcb->TaskID);
+            R2_Owner = ptcb->TaskID;
+            ptcb->holding_r2 = 1;
+            fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+            printf("%d   LockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
         }
     }
 
     // Unlock R2
-    if (now == ptcb->R2_UnlockTime && ptcb->inCriticalSection == 2) {
+    if (now == ptcb->R2_UnlockTime && ptcb->holding_r2 && ptcb->R2_UnlockTime != 0) {
         R2_Owner = -1;
-        ptcb->inCriticalSection = -1;
-        fprintf(fp, "%d UnlockResource task(%d)(%d) - - - - R2\n", now, ptcb->TaskID, ptcb->TaskID);
+        ptcb->holding_r2 = 0;
+        fprintf(Output_fp, "%d UnlockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+        printf("%d UnlockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
     }
 }
+
 
 void  OSTimeTick(void)
 {
@@ -1103,6 +1100,7 @@ void  OSTimeTick(void)
         /*setting the end time for the os*/
         if (OSTimeGet() > SYSTEM_END_TIME) {
             OSRunning = OS_FALSE;
+            fclose(Output_fp);
             exit(0);
         }
         /*Setting the end time for the OS*/
@@ -1131,6 +1129,7 @@ void  OSTimeTick(void)
         }
 #endif
 
+		
         // Decrement remaining time for running task
         if (OSTCBCur->OSTCBPrio != OS_TASK_IDLE_PRIO)
         {
@@ -1170,7 +1169,7 @@ void  OSTimeTick(void)
             if (ptcb->state == 1 && ptcb->remaining > 0 && OSTime >= ptcb->deadline) {
                 ptcb->state = 4;
             }
-            INT8U kkk = OSTime;
+            // INT8U kkk = OSTime;
             if (ptcb->OSTCBDly != 0u) {                    /* No, Delayed or waiting for event with TO     */
                 if(ptcb->state ==0)
                     ptcb->OSTCBDly--;                          /* Decrement nbr of ticks to end of delay       */
@@ -1196,6 +1195,20 @@ void  OSTimeTick(void)
             OS_EXIT_CRITICAL();
         }
 
+
+        // check if the task is blocked and preempted
+        for (int i = 0; i < OS_LOWEST_PRIO; i++) {
+            OS_TCB* pt = OSTCBPrioTbl[i];
+            if (pt != NULL && pt->IsBlocked == 1) {
+                if (R1_Owner == -1 && R2_Owner == -1) {
+                    pt->IsBlocked = 0;
+                    pt->BlockingTime += OSTimeGet() - pt->BlockingStartTick;
+                    //printf("tick: %d   Unblock task(%d)(%d) total: %d\n", OSTimeGet(), pt->TaskID, pt->TaskNumber, pt->BlockingTime);
+                }
+            }
+        }
+		
+
          // 2. Scheduler: decide the next task
         OS_SchedNew();
         OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
@@ -1215,6 +1228,9 @@ void  OSTimeTick(void)
                      ptcb->TaskNumber++;
                      ptcb->state = 0;
                      
+                     ptcb->BlockingStartTick = 0;
+                     ptcb->BlockingTime = 0;
+                     ptcb->IsBlocked = 0;
                      break;
                  case 3:
                      //printf("%d Arrive task(%d)(job %d) t3\n", OSTime, ptcb->TaskID, ptcb->TaskNumber + 1);
@@ -1224,6 +1240,11 @@ void  OSTimeTick(void)
                      ptcb->TaskNumber++;
                      ptcb->deadline = OSTime + ptcb->period;
                      ptcb->state = 1;
+
+                     ptcb->BlockingStartTick = 0;
+					 ptcb->BlockingTime = 0;
+					 ptcb->IsBlocked = 0;
+                     
                      break;
                  case 4:
                      //printf("%d MissDeadline task(%d)(job %d)\n", OSTime, ptcb->TaskID, ptcb->TaskNumber);
@@ -1235,6 +1256,10 @@ void  OSTimeTick(void)
                      ptcb->ArriveTime = OSTime;
                      ptcb->deadline = OSTime + ptcb->period;
                      ptcb->remaining = ptcb->execution_time;
+
+                     ptcb->BlockingStartTick = 0;
+                     ptcb->BlockingTime = 0;
+                     ptcb->IsBlocked = 0;
                      break;
                  default:
                      break;
@@ -1249,6 +1274,7 @@ void  OSTimeTick(void)
          if (Miss_ptcb)
          {
              PrintTask("MissDeadLine",Miss_ptcb);
+             fclose(Output_fp);
              exit(1);
          }
       
@@ -2002,19 +2028,30 @@ void  OS_Sched (void)
 
 static  void  OS_SchedNew (void)
 {
-#if OS_LOWEST_PRIO <= 63u                        /* See if we support up to 64 tasks                   */
-    INT8U   y;
+#if OS_LOWEST_PRIO <= 63u
+    INT8U y;
 
-
-    y             = OSUnMapTbl[OSRdyGrp];
+    y = OSUnMapTbl[OSRdyGrp];
     OSPrioHighRdy = (INT8U)((y << 3u) + OSUnMapTbl[OSRdyTbl[y]]);
-    if (OSTCBCur != NULL && OSTCBCur->inCriticalSection != -1) {
-        //  keep doing the same task
-        OSPrioHighRdy = OSPrioCur;
-    }
 
-    // update
+    // ---------- NPCS: prevent preemption if current task is in critical section ----------
+    if (OSTCBCur != NULL && (OSTCBCur->holding_r1 || OSTCBCur->holding_r2) && OSTime != 0) {
+        // keep running current task
+        OSPrioHighRdy = OSPrioCur;
+
+        // ---------- BLOCKING detection ----------
+        for (INT8U i = 0; i < OSPrioCur; i++) {
+            OS_TCB* pt = OSTCBPrioTbl[i];
+            if (pt != NULL && pt->state == 1 && pt->IsBlocked == 0) {
+                pt->IsBlocked = 1;
+                pt->BlockingStartTick = OSTimeGet();
+				// printf("tick %u Blocking task %d\n", OSTime,pt->TaskID);
+            }
+        }
+    }
+    // ---------- update ----------
     OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
+    
 #else                                            /* We support up to 256 tasks                         */
     INT8U     y;
     OS_PRIO  *ptbl;
@@ -2315,12 +2352,23 @@ INT8U  OS_TCBInit (INT8U    prio,
         ptcb->deadline= task->TaskArriveTime + task->TaskPeriodic ;
         ptcb->state = 0; // created, not arrival
         ptcb->TaskNumber = 0;
+
         ptcb->R1_LockTime = task->R1_LockTime;
 		ptcb->R2_LockTime = task->R2_LockTime;
+
 		ptcb->R1_UnlockTime = task->R1_UnlockTime;
 		ptcb->R2_UnlockTime = task->R2_UnlockTime;
 
+		ptcb->holding_r1 = 0;
+		ptcb->holding_r2 = 0;
+
         ptcb->TaskID = task->TaskID;
+
+		ptcb->IsBlocked = 0;
+		ptcb->BlockingStartTick = 0;
+		ptcb->BlockingTime = 0; 
+
+
 #else
         pext                     = pext;                   /* Prevent compiler warning if not used     */
         stk_size                 = stk_size;

@@ -92,9 +92,7 @@
 void OutFileInit()
 {
     /*Clear the file */
-    if ((Output_err = fopen_s(&Output_fp, OUTPUT_FILE_NAME, "w")) == 0)
-        fclose(Output_fp);
-    else
+    if ((Output_err = fopen_s(&Output_fp, OUTPUT_FILE_NAME, "w"))!= 0)
         printf("error to clear output file");
 }
 
@@ -333,7 +331,7 @@ void  App_TCBInitHook (OS_TCB *ptcb)
 #if OS_TIME_TICK_HOOK_EN > 0
 void  App_TimeTickHook (void)
 {
-    //printf("tick: %2d =====================\n",OSTime);
+    //printf("tick: %2d task %u \n",OSTime,OSTCBCur->TaskID);
 #if (APP_CFG_PROBE_OS_PLUGIN_EN == DEF_ENABLED) && (OS_PROBE_HOOKS_EN > 0)
     OSProbe_TickHook();
 #endif
