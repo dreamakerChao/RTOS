@@ -1066,37 +1066,29 @@ void resource_manager(OS_TCB* ptcb) {
     INT32U now_time = OSTimeGet();
     INT8U err;
 
-    // ---------- Lock R1 ----------
+    // ---------- Lock R1 (ISR-safe) ----------
     if (now == ptcb->R1_LockTime && !ptcb->holding_r1 && ptcb->R1_LockTime != 0) {
         INT8U original_prio = GetCurrentEffectivePriority(ptcb);
+        INT8U ceiling = R1_CEILING_PRIORITY;
+        INT8U owner_prio = R1->OSEventCnt & 0x00FF;
+
         INT8U accept_err;
+        err = OSMutexAccept_ISR(R1, ptcb, &accept_err);
+        if (accept_err == OS_ERR_NONE || accept_err == OS_ERR_PCP_LOWER) {
+            ptcb->holding_r1 = 1;
+            INT8U inherited_prio = GetEffectiveCeilingPriority(ptcb, ceiling, 1);
 
-        void* token = OSMutexAccept(R1, &accept_err);
-        if (accept_err != 0 && ptcb->IsBlocked == 0) {
-            ptcb->IsBlocked = 1;
-            ptcb->BlockingStartTick = now_time;
+            fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR1 %d to %d\n",
+                now_time, ptcb->TaskID, ptcb->TaskNumber, original_prio, inherited_prio);
+            printf("%d   LockResource task(%d)(%d)\tR1 %d to %d\n",
+                now_time, ptcb->TaskID, ptcb->TaskNumber, original_prio, inherited_prio);
         }
-
-        OSMutexPend(R1, 0, &err);
-
-        if (ptcb->IsBlocked == 1) {
-            ptcb->IsBlocked = 0;
-            ptcb->BlockingTime += OSTimeGet() - ptcb->BlockingStartTick;
-        }
-
-        ptcb->holding_r1 = 1;
-        INT8U inherited_prio = GetEffectiveCeilingPriority(ptcb, R1_CEILING_PRIORITY, 1);
-
-        fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR1 %d to %d\n",
-            now_time, ptcb->TaskID, ptcb->TaskNumber, original_prio, inherited_prio);
-        printf("%d   LockResource task(%d)(%d)\tR1 %d to %d\n",
-            now_time, ptcb->TaskID, ptcb->TaskNumber, original_prio, inherited_prio);
     }
 
-    // ---------- Unlock R1 ----------
+    // ---------- Unlock R1 (ISR-safe) ----------
     if (now == ptcb->R1_UnlockTime && ptcb->holding_r1 && ptcb->R1_UnlockTime != 0) {
         INT8U pre_post_prio = GetCurrentEffectivePriority(ptcb);
-        OSMutexPost(R1);
+        err = OSMutexPost_ISR(R1, ptcb);
         ptcb->holding_r1 = 0;
         INT8U restored_prio = GetCurrentEffectivePriority(ptcb);
 
@@ -1106,37 +1098,29 @@ void resource_manager(OS_TCB* ptcb) {
             now_time, ptcb->TaskID, ptcb->TaskNumber, pre_post_prio, restored_prio);
     }
 
-    // ---------- Lock R2 ----------
+    // ---------- Lock R2 (ISR-safe) ----------
     if (now == ptcb->R2_LockTime && !ptcb->holding_r2 && ptcb->R2_LockTime != 0) {
         INT8U original_prio = GetCurrentEffectivePriority(ptcb);
+        INT8U ceiling = R2_CEILING_PRIORITY;
+        INT8U owner_prio = R2->OSEventCnt & 0x00FF;
+
         INT8U accept_err;
+        err = OSMutexAccept_ISR(R2, ptcb, &accept_err);
+        if (accept_err == OS_ERR_NONE || accept_err == OS_ERR_PCP_LOWER) {
+            ptcb->holding_r2 = 1;
+            INT8U inherited_prio = GetEffectiveCeilingPriority(ptcb, ceiling, 2);
 
-        void* token = OSMutexAccept(R2, &accept_err);
-        if (accept_err != 0 && ptcb->IsBlocked == 0) {
-            ptcb->IsBlocked = 1;
-            ptcb->BlockingStartTick = now_time;
+            fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR2 %d to %d\n",
+                now_time, ptcb->TaskID, ptcb->TaskNumber, original_prio, inherited_prio);
+            printf("%d   LockResource task(%d)(%d)\tR2 %d to %d\n",
+                now_time, ptcb->TaskID, ptcb->TaskNumber, original_prio, inherited_prio);
         }
-
-        OSMutexPend(R2, 0, &err);
-
-        if (ptcb->IsBlocked == 1) {
-            ptcb->IsBlocked = 0;
-            ptcb->BlockingTime += OSTimeGet() - ptcb->BlockingStartTick;
-        }
-
-        ptcb->holding_r2 = 1;
-        INT8U inherited_prio = GetEffectiveCeilingPriority(ptcb, R2_CEILING_PRIORITY, 2);
-
-        fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR2 %d to %d\n",
-            now_time, ptcb->TaskID, ptcb->TaskNumber, original_prio, inherited_prio);
-        printf("%d   LockResource task(%d)(%d)\tR2 %d to %d\n",
-            now_time, ptcb->TaskID, ptcb->TaskNumber, original_prio, inherited_prio);
     }
 
-    // ---------- Unlock R2 ----------
+    // ---------- Unlock R2 (ISR-safe) ----------
     if (now == ptcb->R2_UnlockTime && ptcb->holding_r2 && ptcb->R2_UnlockTime != 0) {
         INT8U pre_post_prio = GetCurrentEffectivePriority(ptcb);
-        OSMutexPost(R2);
+        err = OSMutexPost_ISR(R2, ptcb);
         ptcb->holding_r2 = 0;
         INT8U restored_prio = GetCurrentEffectivePriority(ptcb);
 
@@ -1146,6 +1130,8 @@ void resource_manager(OS_TCB* ptcb) {
             now_time, ptcb->TaskID, ptcb->TaskNumber, pre_post_prio, restored_prio);
     }
 }
+
+
 
 
 
@@ -1204,7 +1190,6 @@ void  OSTimeTick(void)
         }
 #endif
 
-		
         // Decrement remaining time for running task
         if (OSTCBCur->OSTCBPrio != OS_TASK_IDLE_PRIO)
         {
@@ -1229,16 +1214,19 @@ void  OSTimeTick(void)
 
         }
 
-
-        
-
+        INT32U ttt = OSTimeGet();
         ptcb = OSTCBList;                                  /* Point at first TCB in TCB list               */
         while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
             
             OS_ENTER_CRITICAL();
             //check resorce lock
             resource_manager(ptcb);
-            
+
+            //
+            if (ptcb->OSTCBPrio < OSPrioCur && ptcb->state == 1) {
+                ptcb->BlockingTime++;
+            }
+       
             //printf("task: %2d remaining : %2d\n", ptcb->TaskID,ptcb->remaining);
             // Deadline miss
             if (ptcb->state == 1 && ptcb->remaining > 0 && OSTime >= ptcb->deadline) {
@@ -1270,7 +1258,8 @@ void  OSTimeTick(void)
             OS_EXIT_CRITICAL();
         }
 
-        		
+        
+        
 
          // 2. Scheduler: decide the next task
         OS_SchedNew();
@@ -2117,9 +2106,9 @@ static  void  OS_SchedNew (void)
             }
         }
 
-        // Only allow preemption if a higher-priority task is truly ready
+        // Check ceiling constraint: only allow preemption if new task has truly higher priority
         if (cur_ceiling <= OSPrioHighRdy) {
-            OSPrioHighRdy = OSPrioCur;  // stay with current task
+            OSPrioHighRdy = OSPrioCur;  // Stay with current task
         }
     }
 
@@ -2416,31 +2405,34 @@ INT8U  OS_TCBInit (INT8U    prio,
         ptcb->OSTCBOpt           = opt;                    /* Store task options                       */
         ptcb->OSTCBId            = id;                     /* Store task ID                            */
 
-        task_para_set* task = &TaskParameter[p2id[prio]-1];
+        if (prio != OS_TASK_IDLE_PRIO) {
+            task_para_set* task = &TaskParameter[id - 1];
 
-        ptcb->remaining = 0;
-        ptcb->period = task->TaskPeriodic;
-        ptcb->execution_time = task->TaskExecutionTime; 
+            ptcb->remaining = 0;
+            ptcb->period = task->TaskPeriodic;
+            ptcb->execution_time = task->TaskExecutionTime;
 
-        ptcb->ArriveTime = task->TaskArriveTime;
-        ptcb->deadline= task->TaskArriveTime + task->TaskPeriodic ;
-        ptcb->state = 0; // created, not arrival
-        ptcb->TaskNumber = 0;
+            ptcb->ArriveTime = task->TaskArriveTime;
+            ptcb->deadline = task->TaskArriveTime + task->TaskPeriodic;
+            ptcb->state = 0; // created, not arrival
+            ptcb->TaskNumber = 0;
 
-        ptcb->R1_LockTime = task->R1_LockTime;
-		ptcb->R2_LockTime = task->R2_LockTime;
+            ptcb->R1_LockTime = task->R1_LockTime;
+            ptcb->R2_LockTime = task->R2_LockTime;
 
-		ptcb->R1_UnlockTime = task->R1_UnlockTime;
-		ptcb->R2_UnlockTime = task->R2_UnlockTime;
+            ptcb->R1_UnlockTime = task->R1_UnlockTime;
+            ptcb->R2_UnlockTime = task->R2_UnlockTime;
 
-		ptcb->holding_r1 = 0;
-		ptcb->holding_r2 = 0;
+            ptcb->holding_r1 = 0;
+            ptcb->holding_r2 = 0;
 
-        ptcb->TaskID = task->TaskID;
+            ptcb->TaskID = task->TaskID;
 
-		ptcb->IsBlocked = 0;
-		ptcb->BlockingStartTick = 0;
-		ptcb->BlockingTime = 0; 
+            ptcb->IsBlocked = 0;
+            ptcb->BlockingStartTick = 0;
+            ptcb->BlockingTime = 0;
+        }
+        
 
 
 #else

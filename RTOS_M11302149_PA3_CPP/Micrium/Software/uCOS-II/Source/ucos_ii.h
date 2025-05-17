@@ -1098,9 +1098,15 @@ void          OSMutexPend             (OS_EVENT        *pevent,
 
 INT8U         OSMutexPost             (OS_EVENT        *pevent);
 
+INT8U OSMutexPend_ISR(OS_EVENT* pevent, OS_TCB* ptcb);
+BOOLEAN OSMutexAccept_ISR(OS_EVENT* pevent, OS_TCB* ptcb, INT8U* perr);
+INT8U OSMutexPost_ISR(OS_EVENT* pevent, OS_TCB* ptcb);
+
 #if OS_MUTEX_QUERY_EN > 0u
 INT8U         OSMutexQuery            (OS_EVENT        *pevent,
                                        OS_MUTEX_DATA   *p_mutex_data);
+
+
 #endif
 
 #endif

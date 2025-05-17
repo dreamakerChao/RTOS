@@ -816,3 +816,145 @@ static  void  OSMutex_RdyAtPrio (OS_TCB  *ptcb,
 
 
 #endif                                                     /* OS_MUTEX_EN                              */
+
+
+
+INT8U OSMutexPend_ISR(OS_EVENT* pevent, OS_TCB* ptcb) {
+    INT8U pcp;
+    INT8U owner;
+
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR cpu_sr = 0u;
+#endif
+
+#if OS_ARG_CHK_EN > 0u
+    if (pevent == (OS_EVENT*)0 || ptcb == (OS_TCB*)0) {
+        return OS_ERR_PEVENT_NULL;
+    }
+    if (pevent->OSEventType != OS_EVENT_TYPE_MUTEX) {
+        return OS_ERR_EVENT_TYPE;
+    }
+#endif
+
+    OS_ENTER_CRITICAL();
+    pcp = (INT8U)(pevent->OSEventCnt >> 8u);          // Extract ceiling
+    owner = (INT8U)(pevent->OSEventCnt & 0xFFu);      // Extract owner prio
+
+    if (owner == OS_MUTEX_AVAILABLE) {
+        // Mutex is free: acquire it
+        pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;
+        pevent->OSEventCnt |= ptcb->OSTCBPrio;
+        pevent->OSEventPtr = (void*)ptcb;
+
+        // Check PCP rule
+        if ((pcp != OS_PRIO_MUTEX_CEIL_DIS) && (ptcb->OSTCBPrio <= pcp)) {
+            OS_EXIT_CRITICAL();
+            return OS_ERR_PCP_LOWER;
+        }
+
+        OS_EXIT_CRITICAL();
+        return OS_ERR_NONE;  // Lock acquired
+    }
+
+    OS_EXIT_CRITICAL();
+    return 0xFF;  // Already held
+}
+
+
+
+
+BOOLEAN OSMutexAccept_ISR(OS_EVENT* pevent, OS_TCB* ptcb, INT8U* perr) {
+    INT8U pcp;
+    INT8U owner;
+
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR cpu_sr = 0u;
+#endif
+
+#if OS_ARG_CHK_EN > 0u
+    if (pevent == (OS_EVENT*)0 || ptcb == (OS_TCB*)0) {
+        if (perr != (INT8U*)0) {
+            *perr = OS_ERR_PEVENT_NULL;
+        }
+        return OS_FALSE;
+    }
+    if (pevent->OSEventType != OS_EVENT_TYPE_MUTEX) {
+        if (perr != (INT8U*)0) {
+            *perr = OS_ERR_EVENT_TYPE;
+        }
+        return OS_FALSE;
+    }
+#endif
+
+    OS_ENTER_CRITICAL();
+    pcp = (INT8U)(pevent->OSEventCnt >> 8u);
+    owner = (INT8U)(pevent->OSEventCnt & 0xFF);
+
+    if (owner == OS_MUTEX_AVAILABLE) {
+        pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;     // Clear LSB
+        pevent->OSEventCnt |= ptcb->OSTCBPrio;           // Set task's priority
+        pevent->OSEventPtr = (void*)ptcb;               // Mark ownership
+
+        if ((pcp != OS_PRIO_MUTEX_CEIL_DIS) &&
+            (ptcb->OSTCBPrio <= pcp)) {
+            OS_EXIT_CRITICAL();
+            if (perr != (INT8U*)0) {
+                *perr = OS_ERR_PCP_LOWER;
+            }
+            return OS_TRUE; // Mutex was locked, but PCP violation
+        }
+        else {
+            OS_EXIT_CRITICAL();
+            if (perr != (INT8U*)0) {
+                *perr = OS_ERR_NONE;
+            }
+            return OS_TRUE; // Success
+        }
+    }
+
+    OS_EXIT_CRITICAL();
+    if (perr != (INT8U*)0) {
+        *perr = OS_ERR_NONE;
+    }
+    return OS_FALSE; // Mutex not available
+}
+
+INT8U OSMutexPost_ISR(OS_EVENT* pevent, OS_TCB* ptcb) {
+    INT8U pcp;
+    INT8U owner_prio;
+
+#if OS_CRITICAL_METHOD == 3u
+    OS_CPU_SR cpu_sr = 0u;
+#endif
+
+#if OS_ARG_CHK_EN > 0u
+    if (pevent == (OS_EVENT*)0 || ptcb == (OS_TCB*)0) {
+        return OS_ERR_PEVENT_NULL;
+    }
+    if (pevent->OSEventType != OS_EVENT_TYPE_MUTEX) {
+        return OS_ERR_EVENT_TYPE;
+    }
+#endif
+
+    OS_TRACE_MUTEX_POST_ENTER(pevent);
+
+    OS_ENTER_CRITICAL();
+    pcp = (INT8U)(pevent->OSEventCnt >> 8u);
+    owner_prio = (INT8U)(pevent->OSEventCnt & 0xFFu);
+
+    // Only the owner can release the mutex
+    if ((OS_TCB*)pevent->OSEventPtr != ptcb) {
+        OS_EXIT_CRITICAL();
+        OS_TRACE_MUTEX_POST_EXIT(OS_ERR_NOT_MUTEX_OWNER);
+        return OS_ERR_NOT_MUTEX_OWNER;
+    }
+
+    // Simply mark mutex as available (skip priority logic)
+    pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;
+    pevent->OSEventCnt |= OS_MUTEX_AVAILABLE;
+    pevent->OSEventPtr = (void*)0;
+
+    OS_EXIT_CRITICAL();
+    OS_TRACE_MUTEX_POST_EXIT(OS_ERR_NONE);
+    return OS_ERR_NONE;
+}
