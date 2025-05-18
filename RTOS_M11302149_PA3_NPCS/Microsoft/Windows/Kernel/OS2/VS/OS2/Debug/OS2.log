@@ -1,8 +1,40 @@
-﻿  os_core.c
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(1104,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2356,33): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2357,27): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2359,29): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2360,29): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2365,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-  OS2.vcxproj -> D:\113-2\RTOS\RTOS_M11302149_PA1_NPCS\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
+﻿  cpu_core.c
+  cpu_c.c
+  lib_ascii.c
+  lib_math.c
+  lib_mem.c
+  lib_str.c
+  os_cpu_c.c
+  os_core.c
+  os_dbg_r.c
+  os_flag.c
+  os_mbox.c
+  os_mem.c
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(1104,13): warning C4013: 'exit' undefined; assuming extern returning int
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2356,33): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2357,27): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2359,29): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2360,29): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Micrium\Software\uCOS-II\Source\os_core.c(2365,28): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
+  os_mutex.c
+  os_q.c
+  os_sem.c
+  os_task.c
+  os_time.c
+  os_tmr.c
+  bsp_cpu.c
+  app_hooks.c
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\app_hooks.c(126,29): warning C4013: 'atoi' undefined; assuming extern returning int
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\app_hooks.c(139,63): warning C4244: '=': conversion from 'INT16U' to 'INT8U', possible loss of data
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\app_hooks.c(179,12): warning C4477: 'printf' : format string '%06x' requires an argument of type 'unsigned int', but variadic argument 2 has type 'OS_TCB *'
+  Generating Code...
+  Compiling...
+  main.c
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\main.c(109,16): warning C4013: 'malloc' undefined; assuming extern returning int
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\main.c(109,14): warning C4047: '=': 'OS_STK **' differs in levels of indirection from 'int'
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\main.c(114,21): warning C4047: '=': 'OS_STK *' differs in levels of indirection from 'int'
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\main.c(124,29): warning C4244: 'function': conversion from 'INT16U' to 'INT8U', possible loss of data
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\main.c(87,17): warning C4101: 'os_err': unreferenced local variable
+E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\main.c(182,25): warning C4244: 'initializing': conversion from 'INT16U' to 'INT8U', possible loss of data
+  Generating Code...
+  OS2.vcxproj -> E:\RTOS\RTOS_M11302149_PA3_NPCS\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe
