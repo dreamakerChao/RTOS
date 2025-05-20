@@ -35,4 +35,5 @@
 83 UnlockResource task(3)(4)	R2
 84	Completion	task( 3)( 4)	task(63)    	       4	       0	      0
 97	Preemption	task(63)    	task( 1)( 3)
-98   LockResource task(1)(3)	R1
+98	Preemption	task( 1)( 3)	task( 2)( 3)
+100	Preemption	task( 2)( 3)	task( 3)( 5)

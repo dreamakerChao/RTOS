@@ -57,12 +57,10 @@ def compare_files(file1_path, file2_path):
         diff_index = min_len
 
     line_num1 = get_line_number(text1, pos_map1[diff_index]) if diff_index < len(pos_map1) else -1
-    line_num2 = get_line_number(text2, pos_map2[diff_index]) if diff_index < len(pos_map2) else -1
 
-    print(f"檔案1差異字元所在行號: {line_num1}")
-    print(f"檔案2差異字元所在行號: {line_num2}")
+    print(f"差異字元所在行號: {line_num1}")
 
-    context_range = 10
+    context_range = 30 # 顯示前後30個字元
     start = max(diff_index - context_range, 0)
     end = diff_index + context_range + 1
 

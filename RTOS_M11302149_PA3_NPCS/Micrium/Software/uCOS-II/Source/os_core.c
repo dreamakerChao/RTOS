@@ -1035,45 +1035,54 @@ static void PrintTask(char type[11],const OS_TCB* miss) {
 
 }
 
-void resource_manager(OS_TCB* ptcb) {
+void resource_manager(OS_TCB* ptcb,int action_type) {
+	// action_type 0: lock, action_type 1: unlock
     INT32U now = ptcb->execution_time - ptcb->remaining;
     INT32U now_time = OSTimeGet();
 
-    // Lock R1
-    if (now == ptcb->R1_LockTime && !ptcb->holding_r1 && ptcb->R1_LockTime !=0) {
-        if (R1_Owner == -1) {
-            R1_Owner = ptcb->TaskID;
-            ptcb->holding_r1 = 1;
-            fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
-            printf("%d   LockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+    if (action_type == 0 && OSTCBHighRdy == ptcb)
+    {
+        // Lock R1
+        if (now == ptcb->R1_LockTime && !ptcb->holding_r1 && ptcb->R1_LockTime != 0) {
+            if (R1_Owner == -1) {
+                R1_Owner = ptcb->TaskID;
+                ptcb->holding_r1 = 1;
+                fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+                printf("%d   LockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+            }
+        }
+        // Lock R2
+        if (now == ptcb->R2_LockTime && !ptcb->holding_r2 && ptcb->R2_LockTime != 0) {
+            if (R2_Owner == -1) {
+                R2_Owner = ptcb->TaskID;
+                ptcb->holding_r2 = 1;
+                fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+                printf("%d   LockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+            }
         }
     }
+    else {
+        // Unlock R1
+        if (now == ptcb->R1_UnlockTime && ptcb->holding_r1 && ptcb->R1_UnlockTime != 0) {
+            R1_Owner = -1;
+            ptcb->holding_r1 = 0;
+            fprintf(Output_fp, "%d UnlockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+            printf("%d UnlockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+        }
 
-    // Unlock R1
-    if (now == ptcb->R1_UnlockTime && ptcb->holding_r1 && ptcb->R1_UnlockTime != 0) {
-        R1_Owner = -1;
-        ptcb->holding_r1 = 0;
-        fprintf(Output_fp, "%d UnlockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
-        printf("%d UnlockResource task(%d)(%d)\tR1\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
-    }
 
-    // Lock R2
-    if (now == ptcb->R2_LockTime && !ptcb->holding_r2 && ptcb->R2_LockTime != 0) {
-        if (R2_Owner == -1) {
-            R2_Owner = ptcb->TaskID;
-            ptcb->holding_r2 = 1;
-            fprintf(Output_fp, "%d   LockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
-            printf("%d   LockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+
+        // Unlock R2
+        if (now == ptcb->R2_UnlockTime && ptcb->holding_r2 && ptcb->R2_UnlockTime != 0) {
+            R2_Owner = -1;
+            ptcb->holding_r2 = 0;
+            fprintf(Output_fp, "%d UnlockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
+            printf("%d UnlockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
         }
     }
+    
 
-    // Unlock R2
-    if (now == ptcb->R2_UnlockTime && ptcb->holding_r2 && ptcb->R2_UnlockTime != 0) {
-        R2_Owner = -1;
-        ptcb->holding_r2 = 0;
-        fprintf(Output_fp, "%d UnlockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
-        printf("%d UnlockResource task(%d)(%d)\tR2\n", now_time, ptcb->TaskID, ptcb->TaskNumber);
-    }
+    
 }
 
 
@@ -1155,15 +1164,15 @@ void  OSTimeTick(void)
         }
 
 
+        //check unlock
+        resource_manager(OSTCBCur, 1);
         
 
         ptcb = OSTCBList;                                  /* Point at first TCB in TCB list               */
         while (ptcb->OSTCBPrio != OS_TASK_IDLE_PRIO) {     /* Go through all TCBs in TCB list              */
             
             OS_ENTER_CRITICAL();
-            //check resorce lock
-            resource_manager(ptcb);
-            
+          
             //printf("task: %2d remaining : %2d\n", ptcb->TaskID,ptcb->remaining);
             // Deadline miss
             if (ptcb->state == 1 && ptcb->remaining > 0 && OSTime >= ptcb->deadline) {
@@ -1196,7 +1205,7 @@ void  OSTimeTick(void)
         }
 
 
-        // check if the task is blocked and preempted
+        // check if the task is blocked
         for (int i = 0; i < OS_LOWEST_PRIO; i++) {
             OS_TCB* pt = OSTCBPrioTbl[i];
             if (pt != NULL && pt->IsBlocked == 1) {
@@ -1210,9 +1219,12 @@ void  OSTimeTick(void)
 		
 
          // 2. Scheduler: decide the next task
-        OS_SchedNew();
-        OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
-       
+         OS_SchedNew();
+         OSTCBHighRdy = OSTCBPrioTbl[OSPrioHighRdy];
+
+         //check lock
+         resource_manager(OSTCBCur, 0);
+              
 
          OS_TCB* Miss_ptcb = NULL;
 

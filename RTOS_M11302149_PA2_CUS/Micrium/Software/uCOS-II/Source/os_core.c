@@ -1047,9 +1047,9 @@ static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
     }
     else if (strcmp(type, "MissDeadLine")==0)
     {
-        printf("%2u\tMissDeadline\ttask(%2u)(%2u)\t------------\n",
+        printf("%2u\tMissDeadline\ttask(%2u)(%2u)\t-------------------\n",
             OSTime, miss->task_id, miss->job_no);
-        fprintf(Output_fp,"%2u\tMissDeadline\ttask(%2u)(%2u)\t------------\n",
+        fprintf(Output_fp,"%2u\tMissDeadline\ttask(%2u)(%2u)\t-------------------\n",
             OSTime, miss->task_id, miss->job_no);
     }
     else
@@ -2507,8 +2507,8 @@ void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node) {
 
                 INT8U err;
                 aperiod_Param* msg  = OSQAccept(serverQ, &err); // deQ
-                printf("%2u\tAperiodic job (%2u) is finished.\n", OSTime, msg->TaskID);
-                fprintf(Output_fp, "%2u\tAperiodic job (%2u) is finished.\n", OSTime, msg->TaskID);
+                printf("%2u\tAperiodic job (%2u) is finished.\n", OSTime, min_node->job_no);
+                fprintf(Output_fp, "%2u\tAperiodic job (%2u) is finished.\n", OSTime, min_node->job_no);
             }
         }
     }
@@ -2557,7 +2557,7 @@ void server_replenisher(BOOLEAN type) {
         if (AperiodList[server_cur].TaskDeadLine < 
             (INT16U)(job->TaskArriveTime + (job->TaskExecutionTime * 100 / Server_Para.Size))) {
             snprintf(aperiodic_buf, sizeof(aperiodic_buf),
-                "%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline).\n",
+                "%2u\tAperiodic job(%2u) arrives. But can't Scheduled. (miss absolute deadline)\n",
                 now, AperiodList[server_cur].TaskID);
             aperiodic_flag = OS_TRUE;
             OSQAccept(serverQ, &perr);
