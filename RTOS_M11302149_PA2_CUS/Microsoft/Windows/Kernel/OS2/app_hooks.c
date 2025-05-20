@@ -93,9 +93,7 @@
 void OutFileInit()
 {
     /*Clear the file */
-    if ((Output_err = fopen_s(&Output_fp, OUTPUT_FILE_NAME, "w")) == 0)
-        fclose(Output_fp);
-    else
+    if (fopen_s(&Output_fp, OUTPUT_FILE_NAME, "w") != 0)
         printf("error to clear output file");
 }
 

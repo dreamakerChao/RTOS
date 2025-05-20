@@ -120,7 +120,8 @@ typedef struct sever_para {
 } sever_para;
 sever_para Server_Para;
 int server_cur;
-
+char aperiodic_buf[256];
+BOOLEAN aperiodic_flag;
 /*Server parameter*/
 
 /*Dynamic Create the stack size*/
@@ -128,6 +129,7 @@ OS_STK** Task_STK;
 
 /*Create Task*/
 task_para_set TaskParameter[OS_MAX_TASKS];
+
 
 INT8U p2id[64];
 

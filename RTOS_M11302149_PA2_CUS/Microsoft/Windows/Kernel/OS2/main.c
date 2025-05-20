@@ -144,7 +144,6 @@ int  main (void)
     serverQ = OSQCreate(&serverQBuffer[0], APERIODIC_QUEUE_SIZE);
 
 
-
     OSTimeSet(0);
     OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II)   */
 

@@ -1,41 +1,11 @@
-﻿  cpu_core.c
-  cpu_c.c
-  lib_ascii.c
-  lib_math.c
-  lib_mem.c
-  lib_str.c
-  os_cpu_c.c
-  os_core.c
-  os_dbg_r.c
-  os_flag.c
-  os_mbox.c
-  os_mem.c
-  os_mutex.c
-  os_q.c
-  os_sem.c
-  os_task.c
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(1088,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(1066,13): warning C4101: 'ptcb': 未參考的區域變數
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2172,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2386,13): warning C4013: 'free' 未定義; 假設 extern 傳回整數
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2434,45): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2565,44): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2566,35): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2600,44): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2601,35): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-  os_time.c
-  os_tmr.c
-  bsp_cpu.c
-  app_hooks.c
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\app_hooks.c(127,31): warning C4013: 'atoi' 未定義; 假設 extern 傳回整數
-  正在產生程式碼...
-  正在編譯...
-  main.c
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(105,16): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(105,14): warning C4047: '=': 'OS_STK **' 與 'int' 間接取值的層級不同
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(110,21): warning C4047: '=': 'OS_STK *' 與 'int' 間接取值的層級不同
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(121,33): warning C4244: '函式': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(132,33): warning C4244: '函式': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
-D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\main.c(85,17): warning C4101: 'os_err': 未參考的區域變數
-  正在產生程式碼...
+﻿  os_core.c
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(1086,13): warning C4013: 'exit' 未定義; 假設 extern 傳回整數
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(1063,13): warning C4101: 'ptcb': 未參考的區域變數
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2177,28): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2391,13): warning C4013: 'free' 未定義; 假設 extern 傳回整數
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2443,45): warning C4013: 'malloc' 未定義; 假設 extern 傳回整數
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2582,44): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2583,35): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2619,44): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
+D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Micrium\Software\uCOS-II\Source\os_core.c(2620,35): warning C4244: '=': 將 'INT16U' 轉換為 'INT8U'，由於類型不同，可能導致資料遺失
   OS2.vcxproj -> D:\113-2\RTOS\RTOS_M11302149_PA2_CUS\Microsoft\Windows\Kernel\OS2\VS\Debug\OS2.exe

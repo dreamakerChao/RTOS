@@ -1,8 +1,19 @@
+import chardet
+
+def detect_encoding(file_path):
+    """
+    使用 chardet 偵測檔案編碼
+    """
+    with open(file_path, 'rb') as f:
+        raw_data = f.read()
+    result = chardet.detect(raw_data)
+    return result['encoding'] if result['encoding'] else 'utf-8'
+
 def preprocess_text_with_pos(text):
     """
-    移除空白、tab、換行，並回傳：
-    - 處理後字串
-    - 每個字元在原始字串的位置index清單
+    Remove spaces, tabs, and newlines, and return:
+    - processed string
+    - list of original indices for each character
     """
     processed_chars = []
     original_positions = []
@@ -14,13 +25,16 @@ def preprocess_text_with_pos(text):
 
 def get_line_number(text, char_pos):
     """
-    根據字元在原始字串位置，計算所在行數 (從1開始)
+    Return the line number (1-based) where the character is located in the original text
     """
     return text.count('\n', 0, char_pos) + 1
 
 def compare_files(file1_path, file2_path):
-    with open(file1_path, 'r', encoding='utf-8') as f1, \
-         open(file2_path, 'r', encoding='utf-8') as f2:
+    enc1 = detect_encoding(file1_path)
+    enc2 = detect_encoding(file2_path)
+
+    with open(file1_path, 'r', encoding=enc1, errors='replace') as f1, \
+         open(file2_path, 'r', encoding=enc2, errors='replace') as f2:
         text1 = f1.read()
         text2 = f2.read()
 
@@ -42,14 +56,12 @@ def compare_files(file1_path, file2_path):
     if diff_index is None:
         diff_index = min_len
 
-    # 印出差異字元所在原始檔案的行號
     line_num1 = get_line_number(text1, pos_map1[diff_index]) if diff_index < len(pos_map1) else -1
     line_num2 = get_line_number(text2, pos_map2[diff_index]) if diff_index < len(pos_map2) else -1
 
     print(f"檔案1差異字元所在行號: {line_num1}")
     print(f"檔案2差異字元所在行號: {line_num2}")
 
-    # 印出差異附近前後10個字，並用^標示字元差異位置
     context_range = 10
     start = max(diff_index - context_range, 0)
     end = diff_index + context_range + 1

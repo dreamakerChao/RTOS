@@ -976,7 +976,8 @@ static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
     if (node != NULL)
     {
         snprintf(name1, sizeof(name1), "task(%2d)(%2d)",
-            node->task_id, node->job_no);
+            //revised
+            OSTCBCur->TaskID, OSTCBCur->TaskNumber);
         if (OSTCBCur == OSTCBHighRdy)
             snprintf(name2, sizeof(name2), "task(%2d)(%2d)",
                 OSTCBHighRdy->TaskID, OSTCBHighRdy->TaskNumber+1);
@@ -1019,9 +1020,9 @@ static void PrintTask(char type[11],const EDF_Node* node,const EDF_Node* miss) {
     }
     else if (strcmp(type, "MissDeadLine")==0)
     {
-        printf("%2u\tMissDeadline\ttask(%2u)(%2u)\t------------------------\n",
+        printf("%2u\tMissDeadline\ttask(%2u)(%2u)\t------------\n",
             OSTime, miss->task_id, miss->job_no);
-        fprintf(Output_fp,"%2u\tMissDeadline\ttask(%2u)(%2u)\t------------------------\n",
+        fprintf(Output_fp,"%2u\tMissDeadline\ttask(%2u)(%2u)\t------------\n",
             OSTime, miss->task_id, miss->job_no);
     }
     else
@@ -2371,7 +2372,8 @@ void Consumer() {
     if (min_node != NULL && min_node->flag != DONE && min_node->executetime > 0) {
         min_node->executetime--;
         if (min_node->executetime == 0) {
-            OSTCBPrioTbl[min_node->task_id]->TaskNumber++;
+            //revised
+            min_node->flag = DONE;
         }
     }
 }
@@ -2392,8 +2394,23 @@ BOOLEAN Activer() {
                 ptcb = ptcb->OSTCBNext;
                 continue;
             }
+            
             new_node->task_id = ptcb->TaskID;
-            new_node->job_no = ptcb->TaskNumber;
+
+            //revised
+            if(heap_size>0)
+            {
+                EDF_Node* min_node = EDF_HeapPeekMin();
+                if (min_node->flag == DONE && min_node->task_id == ptcb->TaskID)
+                    new_node->job_no = ptcb->TaskNumber + 1;
+                else
+                    new_node->job_no = ptcb->TaskNumber;
+            }
+            else {
+                new_node->job_no = ptcb->TaskNumber;
+            }
+            
+
             new_node->arrival = current_time;
             new_node->deadline = current_time + ptcb->period;
             new_node->executetime = ptcb->execution_time;
@@ -2427,6 +2444,7 @@ void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node) {
     BOOLEAN done = OS_FALSE;
     EDF_Node* min_node = NULL;
     EDF_Node* min_node_copy = NULL;
+    INT32U ttt = OSTimeGet();
 
     if (heap_size>0) {
         min_node = EDF_HeapPeekMin();
@@ -2447,6 +2465,7 @@ void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node) {
         if (heap_size == 0) {
             OSTCBHighRdy = OSTCBPrioTbl[OS_TASK_IDLE_PRIO];
             OSPrioHighRdy = OS_TASK_IDLE_PRIO;
+            
         }
         else {
             OSTCBHighRdy = OSTCBPrioTbl[min_node->task_id];
@@ -2457,6 +2476,7 @@ void EDF_Scheduler(BOOLEAN new_job_in, EDF_Node* miss_node) {
     }
     if (done == OS_TRUE) {
         PrintTask("Completion", min_node_copy, NULL);
+        OSTCBPrioTbl[min_node_copy->task_id]->TaskNumber++;
         free(min_node_copy);
         //printf("SW to %u\n", OSPrioHighRdy);
     }
