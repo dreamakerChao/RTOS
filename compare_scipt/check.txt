@@ -1,0 +1,20 @@
+[NPCS/TaskSet1]
+O 兩個檔案內容相同（忽略空白、tab與換行）
+[NPCS/Taskset2]
+O 兩個檔案內容相同（忽略空白、tab與換行）
+[CPP/TaskSet1]
+O 兩個檔案內容相同（忽略空白、tab與換行）
+[CPP/Taskset2]
+O 兩個檔案內容相同（忽略空白、tab與換行）
+[CUS/Taskset1]
+O 兩個檔案內容相同（忽略空白、tab與換行）
+[CUS/Taskset2]
+⚠️ 執行 CUS\Taskset2\OS_CUS.exe 回傳碼：1（可接受）
+O 兩個檔案內容相同（忽略空白、tab與換行）
+[CUS/Taskset3]
+O 兩個檔案內容相同（忽略空白、tab與換行）
+[EDF/taskset1]
+O 兩個檔案內容相同（忽略空白、tab與換行）
+[EDF/taskset2]
+⚠️ 執行 EDF\taskset2\OS_EDF.exe 回傳碼：1（可接受）
+O 兩個檔案內容相同（忽略空白、tab與換行）
